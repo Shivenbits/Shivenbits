@@ -1,14 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>
-		BLOGS
-
-	</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog Hub</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+        }
+        .blog-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .blog-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 300px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .blog-card:hover {
+            transform: scale(1.05);
+        }
+        .blog-card a {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
+    <header>Welcome to My Blog Hub</header>
+    <div class="container">
+        <p style="text-align: center; font-size: 18px;">Explore my latest blogs on science, technology, and the mysteries of the universe.</p>
+        <div class="blog-list">
+            <div class="blog-card">
+                <h3>The Lost World of Mars</h3>
+                <p>A deep dive into how Mars lost its atmosphere and how we could terraform it.</p>
+                <a href="marsblog.html">Read More</a>
+            </div>
+            <div class="blog-card">
+                <h3>Title of Another Blog</h3>
+                <p>Brief description of what this blog is about.</p>
+                <a href="marsblog.html">Read More</a>
+            </div>
+            <div class="blog-card">
+    <h3>New Blog Title</h3>
+    <p>A short description of the new blog.</p>
+    <a href="your-blog-link.html">Read More</a>
+</div>
+<div class="blog-card">
+    <h3>New Blog Title</h3>
+    <p>A short description of the new blog.</p>
+    <a href="your-blog-link.html">Read More</a>
+</div>
+<div class="blog-card">
+    <h3>New Blog Title</h3>
+    <p>A short description of the new blog.</p>
+    <a href="your-blog-link.html">Read More</a>
+</div>
+<div class="blog-card">
+    <h3>New Blog Title</h3>
+    <p>A short description of the new blog.</p>
+    <a href="your-blog-link.html">Read More</a>
+</div>
 
+            <!-- Add more blog cards as needed -->
+        </div>
+    </div>
 </body>
 </html>
