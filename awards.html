@@ -1,11 +1,161 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title> Awards</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Awards - ShivenBits</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background-color: #2C3E50;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        /* Main Section */
+        .container {
+            width: 80%;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .container h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #2C3E50;
+        }
+
+        /* Award Items */
+        .award-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 30px;
+        }
+
+        .award-item {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 280px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .award-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .award-item h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #2980b9;
+        }
+
+        .award-item p {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .award-item .date {
+            font-size: 14px;
+            color: #95a5a6;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #2C3E50;
+            color: #fff;
+            margin-top: 30px;
+        }
+
+        footer a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
+
+<header>
+    <h1>Awards & Recognitions</h1>
+</header>
+
+<div class="container">
+    <h2>Honoring Excellence</h2>
+    
+    <div class="award-list">
+        <div class="award-item">
+            <h3>Best Data Science Innovation</h3>
+            <p>Recognized for outstanding contribution to AI and data science, showcasing exceptional skills in predictive analytics and machine learning.</p>
+            <span class="date">January 2024</span>
+        </div>
+        
+        <div class="award-item">
+            <h3>Outstanding Leadership in Tech</h3>
+            <p>Awarded for exemplary leadership in tech innovation and mentorship, guiding the next generation of tech enthusiasts and professionals.</p>
+            <span class="date">December 2023</span>
+        </div>
+
+        <div class="award-item">
+            <h3>Innovative Educator Award</h3>
+            <p>For designing and implementing groundbreaking educational programs that leverage technology to inspire and teach students in creative ways.</p>
+            <span class="date">June 2023</span>
+        </div>
+        <div class="award-item">
+            <h3>Best Data Science Innovation</h3>
+            <p>Recognized for outstanding contribution to AI and data science, showcasing exceptional skills in predictive analytics and machine learning.</p>
+            <span class="date">January 2024</span>
+        </div>
+        
+        <div class="award-item">
+            <h3>Outstanding Leadership in Tech</h3>
+            <p>Awarded for exemplary leadership in tech innovation and mentorship, guiding the next generation of tech enthusiasts and professionals.</p>
+            <span class="date">December 2023</span>
+        </div>
+
+        <div class="award-item">
+            <h3>Innovative Educator Award</h3>
+            <p>For designing and implementing groundbreaking educational programs that leverage technology to inspire and teach students in creative ways.</p>
+            <span class="date">June 2023</span>
+        </div>
+    </div>
+</div>
+
 
 </body>
 </html>
