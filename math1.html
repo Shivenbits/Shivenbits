@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ShivenBits Math Blog</title>
   <style>
     body {
@@ -10,38 +10,48 @@
       margin: 0;
       padding: 0;
       line-height: 1.6;
-      background-color: #f4f6f9;
+      background: linear-gradient(to right, #ffe5b4, #ffecd2);
       color: #333;
     }
 
     .container {
-      max-width: 800px;
-      margin: auto;
-      padding: 40px 20px;
+      max-width: 850px;
+      margin: 40px auto;
+      padding: 40px 30px;
+      background-color: #fffaf3;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      border-radius: 15px;
     }
 
     h1 {
-      font-size: 2.5rem;
+      font-size: 2.8rem;
       margin-bottom: 40px;
       text-align: center;
-      color: #1a1a1a;
+      color: #d35400;
     }
 
     h2 {
-      font-size: 1.75rem;
+      font-size: 2rem;
       margin-top: 40px;
-      color: #2c3e50;
+      color: #c0392b;
     }
 
     h3 {
-      font-size: 1.2rem;
-      color: #555;
-      margin-top: 20px;
+      font-size: 1.15rem;
+      color: #7f8c8d;
+      margin-top: 15px;
+      font-weight: normal;
+    }
+
+    p {
+      margin-top: 15px;
+      font-size: 1rem;
+      color: #444;
     }
 
     .spacer {
-      height: 100px;
-      border-bottom: 1px solid #ddd;
+      height: 80px;
+      border-bottom: 2px dashed #f5cba7;
       margin-top: 30px;
     }
 
@@ -50,8 +60,8 @@
       max-height: 400px;
       object-fit: contain;
       margin: 20px 0;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
   </style>
 </head>
@@ -60,38 +70,64 @@
     <h1>ShivenBits: Fun with Numbers</h1>
 
     <h2>1. Multiply Any Number by 11 in Seconds</h2>
-    <h3>🔹 Exploring Patterns in Palindromes</h3>
-    <h3>🔹 The Two-Digit Shortcut</h3>
-    <h3>🔹 Visual Trick: 52 → 5 7 2</h3>
-    <h3>🔹 What Happens with 3-Digit Numbers?</h3>
+    <p>Since 11 is the first real palindromic number, I was wondering if there is any way to speed up the multiplication process. While experimenting, I found this trick to multiply any 3-digit number by 11 in seconds.</p>
 
-    <!-- Image after Topic 1 -->
-    <img src="path-to-your-image1.jpg" alt="Multiply by 11 Trick" class="blog-image">
+    <h3>🔹 The Two-Digit Shortcut</h3>
+    <p>Take any two-digit number. Add the two digits. Write the answer as (first digit) (sum) (second digit). For example:</p>
+    <p><strong>52 →</strong> 5 + 2 = 7 → <strong>Answer: 572</strong></p>
+
+    <h3>🔹 What About 3-Digit Numbers?</h3>
+    <p>I’m still exploring how this pattern expands to 3-digit numbers. I’ve found a way that works but will be digging deeper to understand why it behaves that way mathematically.</p>
+
 
     <div class="spacer"></div>
 
     <h2>2. The Reversing 1089 Trick</h2>
-    <h3>🔹 A Curious Algorithm with 3-Digit Numbers</h3>
-    <h3>🔹 Step-by-Step Breakdown</h3>
-    <h3>🔹 Why Does It Always Land on 1089?</h3>
-    <h3>🔹 When and Why the Trick Fails</h3>
+    <p>We were exploring special numbers online and discovered this fun trick involving 3-digit numbers and a surprising result—1089!</p>
 
-    <!-- Image after Topic 2 -->
-    <img src="path-to-your-image2.jpg" alt="1089 Math Trick Diagram" class="blog-image">
+    <h3>🔹 How It Works</h3>
+    <ul>
+      <li>Choose any 3-digit number where the first and last digits differ by at least 2. (e.g., 521)</li>
+      <li>Reverse the digits: 125</li>
+      <li>Subtract the smaller from the larger: 521 - 125 = 396</li>
+      <li>Reverse the result: 693</li>
+      <li>Add them: 396 + 693 = <strong>1089</strong></li>
+    </ul>
+
+    <h3>🔹 Why Does It Fail Sometimes?</h3>
+    <p>This process fails when the difference between the first and last digits is less than 2. The math behind why that happens is something we’re still curious to understand!</p>
+
 
     <div class="spacer"></div>
 
     <h2>3. Why Does Dividing by 0 Break Math?</h2>
+    
     <h3>🔹 Division as Intuition</h3>
-    <h3>🔹 The Logical Dilemma of 12 ÷ 0</h3>
+    <p>Division has always felt intuitive—like asking, "How many times does one number go into another?" For example, 12 ÷ 3 just means how many times 3 goes into 12 (which is 4). But what about 12 ÷ 0? That would mean how many times 0 goes into 12. That question doesn’t make any sense!</p>
+
     <h3>🔹 A Misleading “Proof” that 1 = 2</h3>
-    <h3>🔹 A Deeper Look: Why Division by 0 is Undefined</h3>
+    <p>Some people try to "prove" wrong things using division by zero. Here's one such fake proof:</p>
+    <pre>
+Let a = b
+Then a² = ab
+a² - b² = ab - b²
+(a - b)(a + b) = b(a - b)
+Canceling (a - b): a + b = b
+Since a = b: b + b = b → 2b = b → 2 = 1 ❌
+    </pre>
+    <p>Why is this wrong? Because you’re dividing both sides by (a - b), which is zero. That breaks the rules of math!</p>
+
     <h3>🔹 Final Thoughts: The Fragility of Math Rules</h3>
+    <p>So from both intuitive and mathematical views, dividing by 0 leads to undefined or broken logic—and that’s why it’s simply not allowed in math!</p>
+
     <div class="spacer"></div>
 
     <h2>Conclusion</h2>
     <h3>🔹 The Power of Curiosity in Math</h3>
-    <h3>🔹 Why Asking “Why” Makes You Better at It</h3>
+    <p>Each of these tricks teaches us that asking “why” can take you deeper into understanding math—not just how to solve problems, but why things work.</p>
+
+    <h3>🔹 Keep Exploring!</h3>
+    <p>Math isn’t just about formulas—it’s full of puzzles, patterns, and hidden surprises. Stay curious and keep asking questions!</p>
   </div>
 </body>
 </html>
