@@ -48,6 +48,14 @@
     td {
       background-color: #fff5e6;
     }
+    .profit {
+      color: green;
+      font-weight: bold;
+    }
+    .loss {
+      color: red;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -58,10 +66,10 @@
   <section>
     <h2> Stocks and impact factors</h2>
     <ul>
-      <li> Company earnings and profitability - Every 3 months, public companies release earnings reports. If a company beats expectations, its stock often jumps. If it disappoints, the price can fall. These reports show how well a company is doing financially and set the tone for its future.</li>
-      <li> Economic indicators (inflation, interest rates) - When interest rates go up, borrowing becomes more expensive for businesses and consumers. This can slow down economic growth, reduce corporate profits, and make stocks less attractive compared to safer assets like bonds.</li>
-      <li> News and media coverage - News about fundings, innovation, discoveries often pumps the stock up as it shows promising future for the company. On the other hand, news about losses, lawsuits, internal turmoil, etc quickly put the stock down.</li>
-      <li> Global events and geopolitical tensions - Conflicts, wars, or unstable governments can spook investors and lead to selloffs. On the other hand, peace deals, pro-business leaders, or strong trade ties can boost investor confidence and drive markets higher. For example, if countries like USA, Iran, Israel, India, etc go to war, the stock market starts falling down.</li>
+      <li>Company earnings and profitability - Every 3 months, public companies release earnings reports...</li>
+      <li>Economic indicators (inflation, interest rates) - When interest rates go up...</li>
+      <li>News and media coverage - News about fundings, innovation, discoveries often pumps the stock up...</li>
+      <li>Global events and geopolitical tensions - Conflicts, wars, or unstable governments can spook investors...</li>
     </ul>
   </section>
 
@@ -74,97 +82,118 @@
         <th>Ticker</th>
         <th>Buy Price</th>
         <th>Shares Bought</th>
-        <th>Total Value</th>
+        <th>Total Cost</th>
+        <th>Current Price</th>
+        <th>Current Value</th>
+        <th>Profit/Loss</th>
         <th>Reason for Buying</th>
       </tr>
       <tr>
         <td>1</td>
         <td>Apple Inc</td>
         <td>AAPL</td>
-        <td>$197.3</td>
+        <td>$197.30</td>
         <td>46</td>
-        <td>9075.8</td>
+        <td>$9,075.80</td>
+        <td>$209.05</td>
+        <td>$9,617.30</td>
+        <td class="profit">+$541.50</td>
         <td>Strong ecosystem & innovation</td>
       </tr>
       <tr>
         <td>2</td>
-        <td>Amazon.com Inc</td>
+        <td>Amazon</td>
         <td>AMZN</td>
         <td>$212.31</td>
         <td>33</td>
         <td>$6,996.23</td>
+        <td>$230.19</td>
+        <td>$7,596.27</td>
+        <td class="profit">+$600.04</td>
         <td>E-commerce and cloud services</td>
       </tr>
       <tr>
         <td>3</td>
-        <td>Costco Wholesale Corp</td>
+        <td>Costco</td>
         <td>COST</td>
-        <td>992.33</td>
+        <td>$992.33</td>
         <td>8</td>
         <td>$7,938.64</td>
+        <td>$927.51</td>
+        <td>$7,420.08</td>
+        <td class="loss">−$518.56</td>
         <td>High customer loyalty, and is quite resilient</td>
       </tr>
       <tr>
         <td>4</td>
-        <td>Alphabet Inc</td>
+        <td>Alphabet</td>
         <td>GOOGL</td>
-        <td>174.73</td>
+        <td>$174.73</td>
         <td>40</td>
         <td>$6,989.20</td>
+        <td>$196.53</td>
+        <td>$7,861.20</td>
+        <td class="profit">+$872.00</td>
         <td>Advertising, AI and cloud</td>
       </tr>
       <tr>
         <td>5</td>
-        <td>Meta Inc</td>
+        <td>Meta</td>
         <td>META</td>
-        <td>699.33</td>
+        <td>$699.33</td>
         <td>7</td>
         <td>$4,895.31</td>
+        <td>$695.21</td>
+        <td>$4,866.47</td>
+        <td class="loss">−$28.84</td>
         <td>Social media and also investing in AI</td>
       </tr>
       <tr>
         <td>6</td>
-        <td>Microsoft Corp</td>
+        <td>Microsoft</td>
         <td>MSFT</td>
         <td>$475.21</td>
         <td>22</td>
         <td>$10,454.62</td>
+        <td>$513.24</td>
+        <td>$11,291.28</td>
+        <td class="profit">+$836.66</td>
         <td>Cloud computing and AI</td>
       </tr>
       <tr>
         <td>7</td>
-        <td>Nvidia Corp</td>
+        <td>Nvidia</td>
         <td>NVDA</td>
-        <td>143.35</td>
+        <td>$143.35</td>
         <td>39</td>
         <td>$5,589.65</td>
+        <td>$179.27</td>
+        <td>$6,996.53</td>
+        <td class="profit">+$1,406.88</td>
         <td>GPU and data centers</td>
       </tr>
       <tr>
         <td>8</td>
         <td>Oracle</td>
         <td>ORCL</td>
-        <td>213.20</td>
+        <td>$213.20</td>
         <td>26</td>
         <td>$5,543.20</td>
+        <td>$250.60</td>
+        <td>$6,515.60</td>
+        <td class="profit">+$972.40</td>
         <td>Cloud and database</td>
-      </tr>
-      <tr>
-        <td>9</td>
-        <td>Tesla</td>
-        <td>TSLA</td>
-        <td>331.29</td>
-        <td>15</td>
-        <td>$4,969.35</td>
-        <td>Trump</td>
       </tr>
       <tr>
         <td>10</td>
         <td>Visa</td>
         <td>V</td>
-        <td>356.49</td>
+        <td>$356.49</td>
         <td>19</td>
         <td>$6,773.31</td>
+        <td>$350.91</td>
+        <td>$6,667.29</td>
+        <td class="loss">−$106.02</td>
         <td>Important in financial transactions</td>
       </tr>
     </table>
