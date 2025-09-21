@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Why Primes Become Rarer — A Simple Proof (PNT)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#7dd3fc;--muted:#9aa6b2;--glass: rgba(255,255,255,0.03)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;background: radial-gradient(circle at 10% 10%, rgba(125,211,252,0.06), transparent 8%), radial-gradient(circle at 90% 90%, rgba(99,102,241,0.04), transparent 12%), var(--bg);color:#e6eef6}
+    .container{max-width:900px;margin:40px auto;padding:28px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 6px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+    header{display:flex;align-items:center;gap:16px}
+    .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#6366f1);display:flex;align-items:center;justify-content:center;font-weight:800;color:#04202b}
+    h1{margin:0;font-size:1.6rem}
+    p.lead{color:var(--muted);margin-top:8px}
+    .card{margin-top:20px;padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--glass)}
+    .math{font-size:1.05rem;line-height:1.6}
+    pre.code{background:rgba(2,6,23,0.6);padding:12px;border-radius:8px;overflow:auto;color:#dbeafe}
+    footer{margin-top:22px;color:var(--muted);font-size:0.88rem;text-align:center}
+    .examples{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+    .example{flex:1 1 200px;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid rgba(255,255,255,0.02)}
+    .muted{color:var(--muted)}
+    a.cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:linear-gradient(90deg,var(--accent),#6366f1);color:#04202b;text-decoration:none;font-weight:600}
+    @media (max-width:600px){.container{margin:20px;padding:18px}.examples{flex-direction:column}}
+  </style>
+  <!-- MathJax for rendering LaTeX nicely -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <div class="logo">π</div>
+      <div>
+        <h1>Why prime numbers become <em>rarer</em> — A short proof using the Prime Number Theorem</h1>
+        <p class="lead"> Equations are typeset with MathJax.</p>
+      </div>
+    </header>
+
+    <section class="card">
+      <article class="math">
+        <h2>Statement (Prime Number Theorem)</h2>
+        <p class="muted">Let \(\pi(x)\) denote the number of primes \(\le x\). The Prime Number Theorem (PNT) says</p>
+        <p style="font-size:1.05rem;margin-top:6px">\[\pi(x)\sim\frac{x}{\log x}\qquad(x\to\infty).\]</p>
+
+        <h2>From PNT to "primes get rarer"</h2>
+        <p class="muted">Divide both sides of the asymptotic relation by \(x\) to obtain the proportion of integers up to \(x\) that are prime:</p>
+        <p style="font-size:1.05rem;margin-top:6px">\[\frac{\pi(x)}{x}\sim\frac{1}{\log x}.\]</p>
+        <p class="muted">Since \(\log x\to\infty\) as \(x\to\infty\), the right-hand side tends to \(0\). Therefore</p>
+        <p style="font-size:1.05rem;margin-top:6px">\[\lim_{x\to\infty}\frac{\pi(x)}{x}=0.\]</p>
+        <p class="muted">Interpreting this probabilistically: the chance that a randomly chosen large integer near \(x\) is prime is about \(1/\log x\), which goes to zero as \(x\) grows. Hence primes become rarer.</p>
+
+        <h3>Key probability approximation</h3>
+        <p class="muted">Using PNT we get</p>
+        <p class="math" style="margin-top:6px">\[\mathbb{P}({n\text{ is prime}})\approx\frac{\pi(n)}{n}\approx\frac{1}{\ln n}.\]</p>
+
+        <div class="examples">
+          <div class="example">
+            <strong>Example: \(n=10^6\)</strong>
+            <p class="muted">\[\frac{1}{\ln(10^6)}\approx\frac{1}{13.8155}\approx 0.0723\quad(\approx7.23\%).\]</p>
+          </div>
+
+          <div class="example">
+            <strong>Example: \(n=10^9\)</strong>
+            <p class="muted">\[\frac{1}{\ln(10^9)}\approx\frac{1}{20.7233}\approx 0.0483\quad(\approx4.83\%).\]</p>
+          </div>
+        </div>
+
+        <h3>Intuition (divisibility perspective)</h3>
+        <p class="muted">A number is prime if it avoids divisibility by any smaller prime. As \(n\) grows, there are more small primes that could divide it, so the constraint set grows. The PNT encapsulates this cumulative effect by showing the density of primes drops like \(1/\log n\).</p>
+
+        <h3>Remark (elementary bounds)</h3>
+        <p class="muted">If you prefer an elementary (weaker) route, Chebyshev proved that for large \(x\) there are positive constants \(c_1,c_2\) with</p>
+        <p class="math">\[c_1\frac{x}{\log x}\le\pi(x)\le c_2\frac{x}{\log x},\]</p>
+        <p class="muted">which also implies \(\pi(x)/x\to0\) as \(x\to\infty\).</p>
+
+      </article>
+
+    </footer>
+  </main>
+</body>
+</html>
