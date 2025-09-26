@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building the Higher Lower Game</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Smooth fade-in animation */
+    .fade-in {
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Fancy underline effect on headings */
+    .underline-gradient {
+      position: relative;
+      display: inline-block;
+    }
+
+    .underline-gradient::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(to right, #06b6d4, #3b82f6);
+      border-radius: 2px;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease-in-out;
+    }
+
+    .underline-gradient:hover::after {
+      transform: scaleX(1);
+    }
+
+    /* Card hover glow */
+    .card-hover {
+      transition: all 0.3s ease-in-out;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 12px 30px rgba(6, 182, 212, 0.25);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-r from-slate-100 to-slate-200 text-gray-800 leading-relaxed antialiased p-6">
+
+  <div class="container mx-auto max-w-4xl bg-white shadow-2xl rounded-3xl p-6 md:p-12 my-10 space-y-12 fade-in card-hover">
+
+    <header class="text-center space-y-4 bg-gradient-to-r from-cyan-700 to-blue-700 text-white rounded-t-2xl p-10 md:p-14 shadow-lg">
+      <h1 class="text-4xl md:text-5xl font-extrabold drop-shadow-lg">
+        Building the Higher Lower Game
+      </h1>
+    </header>
+
+    <section>
+      <h2 class="text-3xl font-bold text-cyan-800 mb-6 underline-gradient">
+        The Game - How It Works
+      </h2>
+      <p class="text-gray-700 leading-loose text-lg">
+        The higher lower game is a knowledge-based strategy game about guessing whether one thing has a higher or lower monthly search volume than another. You start with two items, and if you guess correctly, you gain a point and move to the next round. If you guess incorrectly, the round ends and your score resets. The item with the higher search volume stays for the next round while the lower item is replaced.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-3xl font-bold text-cyan-800 mb-6 underline-gradient">
+        The Game - How I Coded It
+      </h2>
+      <p class="text-gray-700 leading-loose text-lg">
+        The logic I used to make the game was an if-else statement. I stored the search volumes for several items in a list, then randomly selected the first two. If the user guessed correctly, for example when A has a higher search volume than B, then B would be swapped with a new random item, like C. If the guess was wrong, the game ended and the score was displayed.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-3xl font-bold text-cyan-800 mb-6 underline-gradient">
+        Screenshots of the Game + Your Highest Score
+      </h2>
+      <p class="text-gray-700 leading-loose text-lg">
+        Here you can display your highest score along with some screenshots of how the game looks in action.
+      </p>
+      <div class="grid md:grid-cols-2 gap-6 mt-6">
+        <div class="bg-slate-100 rounded-xl shadow-md p-4 hover:shadow-lg transition">
+          <img src="screenshot1.png" alt="Game Screenshot 1" class="rounded-lg">
+        </div>
+        <div class="bg-slate-100 rounded-xl shadow-md p-4 hover:shadow-lg transition">
+          <img src="screenshot2.png" alt="Game Screenshot 2" class="rounded-lg">
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>
