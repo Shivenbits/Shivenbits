@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Game Outcomes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8fafc;
+            color: #1f2937;
+            padding: 20px;
+            margin: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 768px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+        }
+        .header h1 {
+            font-size: 32px;
+            margin: 0;
+            color: #3b82f6;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .playerborder {
+            border: 4px solid #10b981;
+        }
+        .houseborder {
+            border: 4px solid #ef4444;
+        }
+        .neutralborder {
+            border: 4px solid #3b82f6;
+        }
+        .playertitle {
+            color: #10b981;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .housetitle {
+            color: #ef4444;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .neutraltitle {
+            color: #3b82f6;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .infobox {
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .playerinfo {
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+        .houseinfo {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+        .neutralinfo {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .mathtable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .mathtable th, .mathtable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .mathtable th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        
+        <div class="header">
+            <h1>My Statistically Rigged Casino Games</h1>
+            <p>The statistical concepts I used in this activity were expected value and probability distribution. Probability distribution is maps out every possible outcome of a random event (the net gain or loss for the player) and assigns a precise probability to each outcome. The tables in the document illustrate this by showing the two possible results (win/loss), the likelihood of each, and the monetary value assigned. Expected Value is  the long-run average outcome per trial if the game were played an infinite number of times. It is calculated as the sum of all possible outcomes multiplied by their respective probabilities (a weighted average). A positive EV (Game A) means the player is theoretically guaranteed to profit over time, while a negative EV (Game B) guarantees the casino a long-term profit. It is safe to assume that when repeated over multiple iterations, it will eventually lead to the expected outcome by using the Law of large numbers. The law of large numbers is an important theorem in probability that states  as the number of independent trials increases, the average result of the trials will converge to the true Expected Value. While 10 to 15 trials (as used in the simulation) are not mathematically sufficient to guarantee a perfect match, they are typically enough to demonstrate the trend—that is, the average outcome will lean toward the positive EV of Game A and the negative EV of Game B.
+Mathematically, this convergence is expressed using limits:
+As n approaches infinity the observed average must approach the calculated average
+
+
+This is used in daily life in many situations such as insurance pricing, financial planning, weather forecasting and quality control. Insurance companies use probability distribution equations to calculate the likelihood of their claims (car accidents, house fires, etc) The set their prices based on these factors so the expected value is slightly beneficial to them
+ </p>
+            <p style="color: #6b7280;"></p>
+        </div>
+
+        <div class="card playerborder">
+            <h2 class="playertitle">Game A (Positive Expected Value)</h2>
+            <p style="font-size: 18px;">Outcome: Player Always Wins (Profit)</p>
+            <p>
+                This game is played with a standard 52-card deck. The player pays $1.00 to play and bets on whether the drawn card is a Prime Number Card (2, 3, 5, or 7). Face cards (J, Q, K, A) are ignored and result in a redraw. The game is designed to guarantee a positive expected value for the player.
+            </p>
+            <p>
+                The rules are summarized below:
+                <ul>
+                    <li>Cost to play: $1.00.</li>
+                    <li>Play: Draw 1 card from a shuffled 52-card deck.</li>
+                    <li>Win condition: Card is a Prime Number (2, 3, 5, 7, 16 total cards).</li>
+                    <li>Payout: Win $3.50 (net + $2.50).</li>
+                    <li>Loss condition: Card is a Composite Number (4, 6, 8, 9, 10, 20 total cards).</li>
+                    <li>Loss: Win nothing (net - $1.00).</li>
+                </ul>
+            </p>
+            <p>Probability Distribution</p>
+            <p>
+                The probability of drawing a Prime card is 16/52, or approximately 0.3077. The probability of drawing a Composite card is 36/52, or approximately 0.6923.
+            </p>
+            <table class="mathtable">
+                <thead>
+                    <tr>
+                        <th>Outcome</th>
+                        <th>Probability P(X)</th>
+                        <th>Payout ($)</th>
+                        <th>Net Gain ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Prime Card</td>
+                        <td>0.3077</td>
+                        <td>3.50</td>
+                        <td>+2.50</td>
+                    </tr>
+                    <tr>
+                        <td>Composite Card</td>
+                        <td>0.6923</td>
+                        <td>0.00</td>
+                        <td>-1.00</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Expected Value Calculation</p>
+            <p>
+                From this distribution, we calculate the expected value E:
+                E = (+2.50 * 0.3077) + (-1.00 * 0.6923). This calculates to approximately +0.7692 - 0.6923, which is +0.0769. This equals about + $0.08, meaning on average the player gains about 8 cents per play.
+            </p>
+            <p>Simulation (10 Trials)</p>
+            <table class="mathtable">
+                <thead>
+                    <tr>
+                        <th>Trial</th>
+                        <th>Outcome</th>
+                        <th>Net Gain ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>Composite</td><td>-1.00</td></tr>
+                    <tr><td>2</td><td>Prime</td><td>+2.50</td></tr>
+                    <tr><td>3</td><td>Composite</td><td>-1.00</td></tr>
+                    <tr><td>4</td><td>Composite</td><td>-1.00</td></tr>
+                    <tr><td>5</td><td>Composite</td><td>-1.00</td></tr>
+                    <tr><td>6</td><td>Prime</td><td>+2.50</td></tr>
+                    <tr><td>7</td><td>Composite</td><td>-1.00</td></tr>
+                    <tr><td>8</td><td>Composite</td><td>-1.00</td></tr>
+                    <tr><td>9</td><td>Composite</td><td>-1.00</td></tr>
+                    <tr><td>10</td><td>Composite</td><td>-1.00</td></tr>
+                </tbody>
+            </table>
+            <p>
+                In this simulation, the total net gain was +$0.50 over 10 plays, an average gain of +$0.05$ per play, which closely aligns with the theoretical positive E.
+            </p>
+            <div class="infobox playerinfo">
+                <p></p>
+            </div>
+        </div>
+        
+        <div class="card houseborder">
+            <h2 class="housetitle">Game B (Negative Expected Value)</h2>
+            <p style="font-size: 18px;">Outcome: Casino Always Wins (Profit)</p>
+            <p>
+                This game is played with a six-sided die that is secretly weighted to land on '1' 20% of the time (instead of the fair 16.67%). The remaining sides (2, 3, 4, 5, 6) each have a 16% probability. The player pays $1.00$ and bets on rolling a High Number (4, 5, 6).
+            </p>
+            <p>
+                The rules are summarized below:
+                <ul>
+                    <li>Cost to play: $1.00.</li>
+                    <li>Play: Roll the weighted 6-sided die.</li>
+                    <li>Win condition: Roll a High Number (4, 5, 6).</li>
+                    <li>Payout: Win $2.00 (net + $1.00).</li>
+                    <li>Loss condition: Roll a Low Number (1, 2, 3).</li>
+                    <li>Loss: Win nothing (net - $1.00).</li>
+                </ul>
+            </p>
+            <p>Probability Distribution</p>
+            <p>
+                The probability of rolling High is P(4) + P(5) + P(6) = 3 * 0.16 = 0.48. The probability of rolling Low is P(1) + P(2) + P(3) = 0.20 + 0.16 + 0.16 = 0.52.
+            </p>
+            <table class="mathtable">
+                <thead>
+                    <tr>
+                        <th>Outcome</th>
+                        <th>Probability P(X)</th>
+                        <th>Payout ($)</th>
+                        <th>Net Gain ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>High (4, 5, 6)</td>
+                        <td>0.48</td>
+                        <td>2.00</td>
+                        <td>+1.00</td>
+                    </tr>
+                    <tr>
+                        <td>Low (1, 2, 3)</td>
+                        <td>0.52</td>
+                        <td>0.00</td>
+                        <td>-1.00</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Expected Value Calculation</p>
+            <p>
+                From this distribution, we calculate the expected value E:
+                E = (+1.00 * 0.48) + (-1.00 * 0.52). This calculates to 0.48 - 0.52 = -0.04. This equals exactly - $0.04, meaning on average the player loses about 4 cents per play (The Casino's Profit).
+            </p>
+            <p>Simulation (10 Trials)</p>
+            <table class="mathtable">
+                <thead>
+                    <tr>
+                        <th>Trial</th>
+                        <th>Roll</th>
+                        <th>Net Gain ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>1 (Low)</td><td>-1.00</td></tr>
+                    <tr><td>2</td><td>6 (High)</td><td>+1.00</td></tr>
+                    <tr><td>3</td><td>1 (Low)</td><td>-1.00</td></tr>
+                    <tr><td>4</td><td>2 (Low)</td><td>-1.00</td></tr>
+                    <tr><td>5</td><td>5 (High)</td><td>+1.00</td></tr>
+                    <tr><td>6</td><td>3 (Low)</td><td>-1.00</td></tr>
+                    <tr><td>7</td><td>4 (High)</td><td>+1.00</td></tr>
+                    <tr><td>8</td><td>1 (Low)</td><td>-1.00</td></tr>
+                    <tr><td>9</td><td>3 (Low)</td><td>-1.00</td></tr>
+                    <tr><td>10</td><td>2 (Low)</td><td>-1.00</td></tr>
+                </tbody>
+            </table>
+            <p>
+                In this simulation, the total net gain was - $4.00$ over 10 plays, an average loss of -$0.40 per play, demonstrating the negative long-term expectation.
+            </p>
+            <div class="infobox houseinfo">
+                <p></p>
+            </div>
+        </div>
+
+        <div class="footer">
+            
+        </div>
+
+    </div>
+</body>
+</html>
