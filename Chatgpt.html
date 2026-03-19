@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Core Defense</title>
+
+<style>
+body{
+    margin:0;
+    background:#0b0f1a;
+    font-family:Arial;
+    color:white;
+    overflow:hidden;
+}
+
+#ui{
+    position:absolute;
+    top:10px;
+    left:10px;
+    background:rgba(0,0,0,0.5);
+    padding:10px;
+    border-radius:8px;
+}
+
+button{
+    margin:3px;
+    padding:6px;
+    cursor:pointer;
+}
+
+#tooltip{
+    margin-top:8px;
+    font-size:12px;
+    opacity:0.9;
+}
+
+#gameOver{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    text-align:center;
+    background:rgba(0,0,0,0.8);
+    padding:20px;
+    border-radius:10px;
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="game"></canvas>
+
+<div id="ui">
+<div>Coins: <span id="coins"></span></div>
+<div>Core Health: <span id="health"></span></div>
+
+<div style="margin-top:6px;">Build:</div>
+<button onclick="selectTower('sniper')">Sniper (60)</button>
+<button onclick="selectTower('blast')">Blast (80)</button>
+<button onclick="selectTower('support')">Support (50)</button>
+
+<div id="tooltip">
+Sniper: Long range, single target<br>
+Blast: Short range, AOE damage<br>
+Support: Slows enemies nearby
+</div>
+</div>
+
+<div id="gameOver">
+<h2>Game Over</h2>
+<div id="score"></div>
+<button onclick="restart()">Restart</button>
+</div>
+
+<script>
+
+/* =============================
+   BASIC SETUP
+============================= */
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const center = {
+    x: canvas.width/2,
+    y: canvas.height/2
+};
+
+let coins = 200;
+let health = 100;
+
+let enemies = [];
+let towers = [];
+let effects = [];
+
+let destroyed = 0;
+let startTime = Date.now();
+
+let spawnTimer = 0;
+let spawnRate = 2;
+
+let placingTower = null;
+
+document.getElementById("coins").innerText = coins;
+document.getElementById("health").innerText = health;
+
+
+/* =============================
+   TOWER DEFINITIONS
+============================= */
+
+const towerStats = {
+
+sniper:{
+    cost:60,
+    range:220,
+    fireRate:1,
+    damage:40,
+    color:"#00d9ff"
+},
+
+blast:{
+    cost:80,
+    range:120,
+    fireRate:0.7,
+    damage:25,
+    aoe:60,
+    color:"#ff9933"
+},
+
+support:{
+    cost:50,
+    range:140,
+    slow:0.6,
+    color:"#66ff66"
+}
+
+};
+
+
+/* =============================
+   INPUT
+============================= */
+
+canvas.addEventListener("mousemove", e=>{
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+});
+
+canvas.addEventListener("click", e=>{
+
+if(!placingTower) return;
+
+let stats = towerStats[placingTower];
+
+if(coins < stats.cost) return;
+
+towers.push({
+x:e.clientX,
+y:e.clientY,
+type:placingTower,
+cooldown:0
+});
+
+coins -= stats.cost;
+placingTower=null;
+
+updateUI();
+
+});
+
+function selectTower(type){
+placingTower = type;
+}
+
+
+/* =============================
+   ENEMY
+============================= */
+
+function spawnEnemy(){
+
+let angle = Math.random()*Math.PI*2;
+
+let radius = Math.max(canvas.width,canvas.height)/2 + 50;
+
+let x = center.x + Math.cos(angle)*radius;
+let y = center.y + Math.sin(angle)*radius;
+
+let dx = center.x - x;
+let dy = center.y - y;
+
+let len = Math.sqrt(dx*dx+dy*dy);
+
+dx/=len;
+dy/=len;
+
+let speed = 40 + Math.random()*30 + destroyed*0.3;
+
+enemies.push({
+x,y,
+dx,dy,
+speed,
+hp:50+destroyed*0.5,
+flash:0
+});
+
+}
+
+
+/* =============================
+   TOWER LOGIC
+============================= */
+
+function updateTowers(dt){
+
+for(let t of towers){
+
+if(t.type==="support") continue;
+
+t.cooldown -= dt;
+
+if(t.cooldown>0) continue;
+
+let stats = towerStats[t.type];
+
+let target = null;
+let dist = Infinity;
+
+for(let e of enemies){
+
+let d = distance(t,e);
+
+if(d<stats.range && d<dist){
+target = e;
+dist = d;
+}
+
+}
+
+if(target){
+
+fireTower(t,target);
+
+t.cooldown = 1/stats.fireRate;
+
+}
+
+}
+
+}
+
+function fireTower(tower,target){
+
+let stats = towerStats[tower.type];
+
+if(tower.type==="sniper"){
+
+target.hp -= stats.damage;
+target.flash=0.1;
+
+effects.push({
+type:"line",
+x1:tower.x,
+y1:tower.y,
+x2:target.x,
+y2:target.y,
+time:0.05
+});
+
+}
+
+if(tower.type==="blast"){
+
+effects.push({
+type:"circle",
+x:target.x,
+y:target.y,
+r:stats.aoe,
+time:0.15
+});
+
+for(let e of enemies){
+
+if(distance(e,target)<stats.aoe){
+
+e.hp -= stats.damage;
+e.flash=0.1;
+
+}
+
+}
+
+}
+
+}
+
+
+/* =============================
+   UPDATE ENEMIES
+============================= */
+
+function updateEnemies(dt){
+
+for(let i=enemies.length-1;i>=0;i--){
+
+let e = enemies[i];
+
+let slow = 1;
+
+for(let t of towers){
+
+if(t.type==="support"){
+
+if(distance(e,t)<towerStats.support.range){
+slow = towerStats.support.slow;
+}
+
+}
+
+}
+
+e.x += e.dx * e.speed * slow * dt;
+e.y += e.dy * e.speed * slow * dt;
+
+e.flash -= dt;
+
+if(distance(e,center)<15){
+
+health -= 10;
+
+updateUI();
+
+enemies.splice(i,1);
+
+continue;
+
+}
+
+if(e.hp<=0){
+
+coins += 15;
+
+destroyed++;
+
+updateUI();
+
+enemies.splice(i,1);
+
+}
+
+}
+
+}
+
+
+/* =============================
+   DRAW
+============================= */
+
+function draw(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+/* core */
+
+let grd = ctx.createRadialGradient(
+center.x,center.y,5,
+center.x,center.y,40
+);
+
+grd.addColorStop(0,"#00ffff");
+grd.addColorStop(1,"#002233");
+
+ctx.fillStyle = grd;
+
+ctx.beginPath();
+ctx.arc(center.x,center.y,25,0,Math.PI*2);
+ctx.fill();
+
+/* towers */
+
+for(let t of towers){
+
+let stats = towerStats[t.type];
+
+ctx.fillStyle = stats.color;
+
+ctx.beginPath();
+ctx.arc(t.x,t.y,10,0,Math.PI*2);
+ctx.fill();
+
+}
+
+/* enemies */
+
+for(let e of enemies){
+
+ctx.fillStyle = e.flash>0 ? "#ff4444" : "#ff2222";
+
+ctx.beginPath();
+ctx.arc(e.x,e.y,8,0,Math.PI*2);
+ctx.fill();
+
+}
+
+/* effects */
+
+for(let i=effects.length-1;i>=0;i--){
+
+let ef = effects[i];
+
+ctx.strokeStyle="#ffffff";
+
+if(ef.type==="line"){
+
+ctx.beginPath();
+ctx.moveTo(ef.x1,ef.y1);
+ctx.lineTo(ef.x2,ef.y2);
+ctx.stroke();
+
+}
+
+if(ef.type==="circle"){
+
+ctx.beginPath();
+ctx.arc(ef.x,ef.y,ef.r,0,Math.PI*2);
+ctx.stroke();
+
+}
+
+ef.time -= 0.016;
+
+if(ef.time<=0) effects.splice(i,1);
+
+}
+
+/* placement preview */
+
+if(placingTower){
+
+let stats = towerStats[placingTower];
+
+ctx.setLineDash([5,5]);
+ctx.strokeStyle=stats.color;
+
+ctx.beginPath();
+ctx.arc(mouse.x,mouse.y,stats.range,0,Math.PI*2);
+ctx.stroke();
+
+ctx.setLineDash([]);
+
+ctx.beginPath();
+ctx.arc(mouse.x,mouse.y,10,0,Math.PI*2);
+ctx.fillStyle=stats.color;
+ctx.fill();
+
+}
+
+}
+
+
+/* =============================
+   GAME LOOP
+============================= */
+
+let mouse={x:0,y:0};
+
+let last = performance.now();
+
+function loop(now){
+
+let dt = (now-last)/1000;
+
+last = now;
+
+spawnTimer += dt;
+
+if(spawnTimer>spawnRate){
+
+spawnEnemy();
+
+spawnTimer=0;
+
+spawnRate = Math.max(0.6, spawnRate*0.995);
+
+}
+
+updateTowers(dt);
+updateEnemies(dt);
+
+draw();
+
+if(health<=0){
+endGame();
+return;
+}
+
+requestAnimationFrame(loop);
+
+}
+
+requestAnimationFrame(loop);
+
+
+/* =============================
+   UTILITIES
+============================= */
+
+function distance(a,b){
+
+let dx = a.x-b.x;
+let dy = a.y-b.y;
+
+return Math.sqrt(dx*dx+dy*dy);
+
+}
+
+function updateUI(){
+
+document.getElementById("coins").innerText = coins;
+document.getElementById("health").innerText = health;
+
+}
+
+function endGame(){
+
+let seconds = Math.floor((Date.now()-startTime)/1000);
+
+let score = seconds*10 + destroyed*5;
+
+document.getElementById("score").innerHTML =
+"Time Survived: "+seconds+"s<br>"+
+"Enemies Destroyed: "+destroyed+"<br>"+
+"Final Score: "+score;
+
+document.getElementById("gameOver").style.display="block";
+
+}
+
+function restart(){
+location.reload();
+}
+
+</script>
+
+</body>
+</html>
