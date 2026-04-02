@@ -1015,6 +1015,31 @@ function updateEnemies(dt) {
     // Hit flash decay
     if (e.hitFlash > 0) e.hitFlash -= dt * 4;
 
+    // ── Tower collision: enemy rams a defence object ──
+    let enemyDead = false;
+    for (let ti = G.towers.length - 1; ti >= 0; ti--) {
+      const t = G.towers[ti];
+      const collisionDist = e.radius + t.radius;
+      if (Math.hypot(e.x - t.x, e.y - t.y) < collisionDist) {
+        // Visual & audio feedback
+        spawnParticles(
+          (e.x + t.x) / 2, (e.y + t.y) / 2,
+          '#ffffff', 16
+        );
+        spawnParticles(t.x, t.y, TOWER_DEFS[t.type].color, 10);
+        spawnFloatingText(t.x, t.y - t.radius - 10, 'DESTROYED!', '#ff3355');
+
+        // Remove the tower
+        G.towers.splice(ti, 1);
+
+        // Remove the enemy (it's also destroyed on impact)
+        G.enemies.splice(i, 1);
+        enemyDead = true;
+        break;
+      }
+    }
+    if (enemyDead) continue;
+
     // Check if reached core
     if (Math.hypot(e.x - CX(), e.y - CY()) < 32) {
       const dmg = Math.ceil(e.maxHp / 25);
