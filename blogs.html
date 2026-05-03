@@ -24,7 +24,7 @@
       --glow: rgba(91,140,247,0.18);
     }
 
-    /* ── Scroll progress bar ── */
+    
     #progress-bar {
       position: fixed; top: 0; left: 0; height: 2px; width: 0%;
       background: linear-gradient(90deg, var(--accent), var(--accent2));
@@ -32,7 +32,7 @@
       box-shadow: 0 0 8px var(--accent);
     }
 
-    /* ── Animated gradient mesh background ── */
+    
     body {
       background-color: var(--bg);
       color: var(--text);
@@ -58,7 +58,7 @@
       100% { transform: scale(1.02) translate(0.5%, -1%); }
     }
 
-    /* ── Nav ── */
+    
     nav {
       position: fixed; top: 2px; left: 0; right: 0;
       z-index: 100;
@@ -91,7 +91,7 @@
     }
     nav a.active { color: var(--accent); }
 
-    /* ── Layout ── */
+    
     main {
       position: relative; z-index: 1;
       padding: 8rem 2rem 4rem;
@@ -103,7 +103,7 @@
       main { padding: 6rem 1.25rem 3rem; }
     }
 
-    /* ── Page Header ── */
+    
     .page-header {
       text-align: center;
       margin-bottom: 4rem;
@@ -137,14 +137,14 @@
       transform: translateY(16px);
     }
 
-    /* ── Blog Grid ── */
+    
     .blog-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
       gap: 2rem;
     }
 
-    /* ── Blog Card ── */
+    
     .blog-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -232,7 +232,7 @@
       transform: translateX(4px);
     }
 
-    /* ── Footer ── */
+    
     footer {
       position: relative; z-index: 1;
       text-align: center; 
@@ -275,7 +275,7 @@
 
     <div class="blog-grid">
 
-      <!--Blog cards -->
+      
 
       <article class="blog-card">
         <h3>THE LOST WORLD OF MARS</h3>
@@ -358,7 +358,7 @@
         <a href="AI.html" class="read-more">Read More</a>
       </article>
 
-      <!-- Add new blogs here-->
+      
 
     </div>
   </main>
@@ -366,7 +366,7 @@
  
 
   <script>
-    // ── Scroll progress bar ──
+    
     const bar = document.getElementById('progress-bar');
     window.addEventListener('scroll', () => {
       const s = document.documentElement;
@@ -374,16 +374,16 @@
       bar.style.width = pct + '%';
     }, { passive: true });
 
-    // ── GSAP Animations ──
+    
     gsap.registerPlugin(ScrollTrigger);
 
-    // Page header animation
+    
     const headerTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
     headerTl
       .to('.page-header h1', { opacity: 1, y: 0, duration: 0.75 }, 0.2)
       .to('.page-header p',  { opacity: 1, y: 0, duration: 0.6 }, 0.5);
 
-    // Staggered blog card entrance
+    
     gsap.to('.blog-card', {
       opacity: 1,
       y: 0,
@@ -393,7 +393,7 @@
       delay: 0.8
     });
 
-    // ── Magnetic hover effect on Read More buttons ──
+    
     document.querySelectorAll('.read-more').forEach(btn => {
       btn.addEventListener('mousemove', e => {
         const rect = btn.getBoundingClientRect();
