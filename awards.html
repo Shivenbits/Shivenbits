@@ -1,140 +1,333 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Awards - ShivenBits</title>
-    <style>
-        /* General Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Awards – ShivenBits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #E0E0E0;
-            color: #333;
-            line-height: 1.6;
-        }
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Header */
-        header {
-            background-color: #384959;
-            color: #FFD700;
-            padding: 20px 0;
-            text-align: center;
-        }
+    :root {
+      --bg: #0b0d13;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.09);
+      --accent: #5b8cf7;
+      --accent2: #a78bfa;
+      --text: #e8eaf0;
+      --muted: #7a7f92;
+      --glow: rgba(91,140,247,0.18);
+    }
 
-        header h1 {
-            font-size: 36px;
-            font-weight: bold;
-        }
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      z-index: 9999; transition: width 0.1s linear;
+      box-shadow: 0 0 8px var(--accent);
+    }
 
-        /* Main Section */
-        .container {
-            width: 80%;
-            margin: 30px auto;
-            background-color: #2E4053;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(0.95rem, 1vw + 0.5rem, 1.05rem);
+      line-height: 1.75;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-        .container h2 {
-            text-align: center;
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: #2C3E50;
-        }
+    .mesh {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(91,140,247,0.13) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 60% at 80% 70%, rgba(167,139,250,0.10) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 60% 10%, rgba(56,189,248,0.07) 0%, transparent 70%);
+      animation: meshFloat 18s ease-in-out infinite alternate;
+    }
+    @keyframes meshFloat {
+      0%   { transform: scale(1) translate(0, 0); }
+      33%  { transform: scale(1.04) translate(1%, 1.5%); }
+      66%  { transform: scale(0.98) translate(-1.5%, 0.5%); }
+      100% { transform: scale(1.02) translate(0.5%, -1%); }
+    }
 
-        /* Award Items */
-        .award-list {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            gap: 30px;
-        }
+    nav {
+      position: fixed; top: 2px; left: 0; right: 0;
+      z-index: 100;
+      display: flex; justify-content: center;
+      padding: 1.1rem 2rem;
+    }
+    .nav-inner {
+      display: flex; gap: 0.25rem; align-items: center;
+      background: rgba(11,13,19,0.72);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 0.45rem 0.6rem;
+    }
+    nav a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.4rem 1rem;
+      border-radius: 100px;
+      transition: color 0.25s, background 0.25s, transform 0.2s;
+      letter-spacing: 0.02em;
+    }
+    nav a:hover { color: var(--text); background: rgba(255,255,255,0.07); transform: translateY(-1px); }
+    nav a.active { color: var(--accent); }
 
-        .award-item {
-            background-color: #E0E0E0;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 280px;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+    main {
+      position: relative; z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 7rem 2rem 5rem;
+    }
 
-        .award-item:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-        }
+    @media (max-width: 600px) { main { padding: 5.5rem 1.25rem 3rem; } }
 
-        .award-item h3 {
-            font-size: 22px;
-            margin-bottom: 10px;
-            color: #2980b9;
-        }
+    
+    .page-header { margin-bottom: 3.5rem; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--accent); font-weight: 500; margin-bottom: 1rem;
+      opacity: 0; transform: translateY(16px);
+    }
+    .eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+    .page-header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.2rem, 5vw + 1rem, 3.6rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: #fff;
+      opacity: 0; transform: translateY(24px);
+    }
+    .name-accent {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .page-header p {
+      color: var(--muted);
+      margin-top: 0.75rem;
+      font-size: 1rem;
+      opacity: 0; transform: translateY(16px);
+    }
 
-        .award-item p {
-            font-size: 16px;
-            color: #7f8c8d;
-            margin-bottom: 15px;
-        }
+    
+    .awards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 1.5rem;
+    }
+    @media (max-width: 600px) {
+      .awards-grid { grid-template-columns: 1fr; }
+    }
 
-        .award-item .date {
-            font-size: 14px;
-            color: #95a5a6;
-        }
+    .award-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.75rem;
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      box-shadow:
+        0 4px 6px rgba(0,0,0,0.3),
+        0 20px 60px rgba(0,0,0,0.3),
+        0 0 0 1px rgba(255,255,255,0.03) inset;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      opacity: 0; transform: translateY(30px);
+      position: relative; overflow: hidden;
+    }
+    .award-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .award-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(91,140,247,0.3);
+      box-shadow:
+        0 4px 6px rgba(0,0,0,0.3),
+        0 20px 60px rgba(0,0,0,0.4),
+        0 0 40px rgba(91,140,247,0.12);
+    }
+    .award-card:hover::before { opacity: 1; }
 
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 10px 0;
-            background-color: #2C3E50;
-            color: #fff;
-            margin-top: 30px;
-        }
+    .award-icon {
+      width: 48px; height: 48px;
+      background: rgba(91,140,247,0.1);
+      border: 1px solid rgba(91,140,247,0.2);
+      border-radius: 14px;
+      display: grid; place-items: center;
+      margin-bottom: 1.25rem;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .award-card:hover .award-icon {
+      background: rgba(91,140,247,0.18);
+      border-color: rgba(91,140,247,0.4);
+    }
+    .award-icon svg {
+      width: 22px; height: 22px;
+      stroke: var(--accent); fill: none;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
 
-        footer a {
-            color: #fff;
-            text-decoration: none;
-        }
+    .award-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .award-date {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent2);
+      font-weight: 500;
+      background: rgba(167,139,250,0.1);
+      border: 1px solid rgba(167,139,250,0.2);
+      padding: 0.2rem 0.65rem;
+      border-radius: 100px;
+    }
+    .award-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.6rem;
+      line-height: 1.3;
+    }
+    .award-card p {
+      font-size: 0.92rem;
+      color: rgba(232,234,240,0.7);
+      line-height: 1.7;
+    }
 
-        footer a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    .divider {
+      height: 1px; background: var(--border); margin: 3rem 0;
+      opacity: 0;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      opacity: 0; transform: translateY(12px);
+    }
+  </style>
 </head>
 <body>
 
-<header>
-    <h1>Awards & Recognitions</h1>
-</header>
+  <div id="progress-bar"></div>
+  <div class="mesh" aria-hidden="true"></div>
 
-<div class="container">
-    <h2>Honoring Excellence</h2>
-    
-    <div class="award-list">
-        <div class="award-item">
-            <h3>John's Hopkins CTY</h3>
-            <p> Selected for the extremely competitive John's Hopkins Centre for Talented Youth's Gifted Summer Prpgram.</p>
-            <span class="date">June 2025</span>
-        </div>
-        
-        <div class="award-item">
-            <h3>Primary Maths Challenge</h3>
-            <p> 1 out of 3 students to be selected for round 2 of PMC from my high school</p>
-            <span class="date"> April 2021</span>
-        </div>
-
-        
+  <nav aria-label="Primary navigation">
+    <div class="nav-inner">
+      <a href="index.html">Home</a>
+      <a href="aboutme.html">About Me</a>
+      <a href="blogs.html">STEM Blogs</a>
+      <a href="awards.html" class="active">Awards</a>
     </div>
-</div>
+  </nav>
 
+  <main>
+    <header class="page-header">
+      <p class="eyebrow">
+        <span class="eyebrow-dot" aria-hidden="true"></span>
+        Awards&amp; Achievements
+      </p>
+      <h1><span class="name-accent">Awards</span> &amp;<br>Honours</h1>
+      <p>A collection of milestones and recognitions along the journey.</p>
+    </header>
 
+    <div class="divider" role="separator"></div>
+
+    <p class="section-label">Awards</p>
+
+    <div class="awards-grid" aria-label="Award list">
+
+      <article class="award-card">
+        <div class="award-icon" aria-hidden="true">
+          
+          <svg viewBox="0 0 24 24">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/>
+            <path d="M6 12v5c3.33 2 8.67 2 12 0v-5"/>
+          </svg>
+        </div>
+        <div class="award-meta">
+          <span class="award-date">June 2025</span>
+        </div>
+        <h3>Johns Hopkins CTY</h3>
+        <p>Selected for the highly competitive Johns Hopkins Centre for Talented Youth's Gifted Summer Program — a prestigious academic accelerator for exceptional young minds.</p>
+      </article>
+
+      <article class="award-card">
+        <div class="award-icon" aria-hidden="true">
+          
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </div>
+        <div class="award-meta">
+          <span class="award-date">April 2021</span>
+        </div>
+        <h3>Primary Maths Challenge</h3>
+        <p>1 of only 3 students selected from my school to advance to Round 2 of the Primary Maths Challenge — a national competition celebrating mathematical talent.</p>
+      </article>
+
+    </div>
+  </main>
+
+  <script>
+    const bar = document.getElementById('progress-bar');
+    window.addEventListener('scroll', () => {
+      const s = document.documentElement;
+      const pct = (s.scrollTop / (s.scrollHeight - s.clientHeight)) * 100;
+      bar.style.width = pct + '%';
+    }, { passive: true });
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl
+      .to('.eyebrow',       { opacity: 1, y: 0, duration: 0.6 }, 0.2)
+      .to('.page-header h1',{ opacity: 1, y: 0, duration: 0.75 }, 0.4)
+      .to('.page-header p', { opacity: 1, y: 0, duration: 0.6 }, 0.6)
+      .to('.divider',       { opacity: 1, duration: 0.5 }, 0.8)
+      .to('.section-label', { opacity: 1, y: 0, duration: 0.5 }, 0.9)
+      .to('.award-card',    { opacity: 1, y: 0, duration: 0.65, stagger: 0.15, ease: 'power2.out' }, 1.0);
+
+    
+    document.querySelectorAll('.award-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const dx = (e.clientX - r.left - r.width / 2) * 0.04;
+        const dy = (e.clientY - r.top - r.height / 2) * 0.04;
+        gsap.to(card, { rotateX: -dy, rotateY: dx, duration: 0.4, ease: 'power2.out', transformPerspective: 800 });
+      });
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.6, ease: 'elastic.out(1, 0.5)' });
+      });
+    });
+  </script>
 </body>
 </html>
