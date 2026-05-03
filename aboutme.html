@@ -1,69 +1,445 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Me</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            width: 60%;
-            margin: 50px auto;
-            background: #1a1a2e;
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
-            text-align: center;
-        }
-        .profile-img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 4px solid #e94560;
-            margin-bottom: 20px;
-        }
-        h1 {
-            margin: 10px 0;
-            font-size: 2em;
-            color: #ffd700;
-        }
-        p {
-            font-size: 1.1em;
-            line-height: 1.6;
-            color: #dcdcdc;
-        }
-        .social-links a {
-            text-decoration: none;
-            color: #ffd700;
-            font-size: 1.2em;
-            margin: 0 10px;
-            transition: color 0.3s ease;
-        }
-        .social-links a:hover {
-            color: #e94560;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About Me – ShivenBits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0d13;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.09);
+      --accent: #5b8cf7;
+      --accent2: #a78bfa;
+      --text: #e8eaf0;
+      --muted: #7a7f92;
+      --glow: rgba(91,140,247,0.18);
+    }
+
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      z-index: 9999; transition: width 0.1s linear;
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(0.95rem, 1vw + 0.5rem, 1.05rem);
+      line-height: 1.75;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .mesh {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(91,140,247,0.13) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 60% at 80% 70%, rgba(167,139,250,0.10) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 60% 10%, rgba(56,189,248,0.07) 0%, transparent 70%);
+      animation: meshFloat 18s ease-in-out infinite alternate;
+    }
+    @keyframes meshFloat {
+      0%   { transform: scale(1) translate(0, 0); }
+      33%  { transform: scale(1.04) translate(1%, 1.5%); }
+      66%  { transform: scale(0.98) translate(-1.5%, 0.5%); }
+      100% { transform: scale(1.02) translate(0.5%, -1%); }
+    }
+
+    nav {
+      position: fixed; top: 2px; left: 0; right: 0;
+      z-index: 100;
+      display: flex; justify-content: center;
+      padding: 1.1rem 2rem;
+    }
+    .nav-inner {
+      display: flex; gap: 0.25rem; align-items: center;
+      background: rgba(11,13,19,0.72);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 0.45rem 0.6rem;
+    }
+    nav a {
+      text-decoration: none; color: var(--muted);
+      font-size: 0.85rem; font-weight: 500;
+      padding: 0.4rem 1rem; border-radius: 100px;
+      transition: color 0.25s, background 0.25s, transform 0.2s;
+      letter-spacing: 0.02em;
+    }
+    nav a:hover { color: var(--text); background: rgba(255,255,255,0.07); transform: translateY(-1px); }
+    nav a.active { color: var(--accent); }
+
+    main {
+      position: relative; z-index: 1;
+      max-width: 900px; margin: 0 auto;
+      padding: 7rem 2rem 5rem;
+    }
+    @media (max-width: 600px) { main { padding: 5.5rem 1.25rem 3rem; } }
+
+    
+    .profile-hero {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 2.5rem;
+      align-items: start;
+      margin-bottom: 3rem;
+    }
+    @media (max-width: 600px) {
+      .profile-hero { grid-template-columns: 1fr; gap: 1.5rem; }
+      .avatar-wrap { justify-self: center; }
+    }
+
+    .avatar-wrap {
+      opacity: 0; transform: scale(0.85);
+    }
+    .avatar {
+      width: 110px; height: 110px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(91,140,247,0.25), rgba(167,139,250,0.2));
+      border: 1px solid rgba(91,140,247,0.3);
+      display: grid; place-items: center;
+      box-shadow: 0 0 40px rgba(91,140,247,0.2);
+    }
+    .avatar svg { width: 48px; height: 48px; stroke: var(--accent); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    .hero-text { display: flex; flex-direction: column; gap: 0.5rem; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--accent); font-weight: 500;
+      opacity: 0; transform: translateY(16px);
+    }
+    .eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+    .hero-text h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.2rem, 5vw + 1rem, 3.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: #fff;
+      opacity: 0; transform: translateY(24px);
+    }
+    .name-accent {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-text .tagline {
+      color: var(--muted); font-style: italic; font-size: 1rem;
+      opacity: 0; transform: translateY(12px);
+    }
+
+    
+    .divider { height: 1px; background: var(--border); margin: 2.5rem 0; opacity: 0; }
+
+    
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 700px) { .content-grid { grid-template-columns: 1fr; } }
+
+    .glass-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.75rem;
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3), 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.03) inset;
+      opacity: 0; transform: translateY(28px);
+    }
+    .glass-card.wide { grid-column: 1 / -1; }
+
+    .card-label {
+      font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent); font-weight: 500; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .card-label::after {
+      content: ''; flex: 1; height: 1px; background: rgba(91,140,247,0.2);
+    }
+
+    .glass-card h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem; font-weight: 700; color: #fff;
+      margin-bottom: 0.75rem;
+    }
+
+    .glass-card p {
+      font-size: 0.93rem;
+      color: rgba(232,234,240,0.75);
+      line-height: 1.8;
+    }
+
+    
+    .fact-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+    .fact-item {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+    }
+    .fact-icon {
+      flex-shrink: 0; width: 32px; height: 32px;
+      background: rgba(91,140,247,0.1);
+      border: 1px solid rgba(91,140,247,0.2);
+      border-radius: 8px;
+      display: grid; place-items: center;
+    }
+    .fact-icon svg { width: 14px; height: 14px; stroke: var(--accent); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .fact-text { font-size: 0.9rem; color: rgba(232,234,240,0.8); }
+    .fact-text strong { color: var(--text); font-weight: 500; }
+
+    
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .pill {
+      font-size: 0.78rem; font-weight: 500;
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: rgba(255,255,255,0.03);
+      transition: color 0.25s, border-color 0.25s;
+    }
+    .pill:hover { color: var(--text); border-color: var(--accent); }
+
+    
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item {
+      display: flex; gap: 1.25rem; align-items: flex-start;
+      position: relative;
+    }
+    .tl-item:not(:last-child) .tl-line { flex: 1; }
+
+    .tl-dot-col {
+      display: flex; flex-direction: column; align-items: center;
+      flex-shrink: 0; padding-top: 3px;
+    }
+    .tl-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 10px rgba(91,140,247,0.6), 0 0 20px rgba(91,140,247,0.3);
+      flex-shrink: 0;
+    }
+    .tl-connector {
+      width: 1px; flex: 1; min-height: 28px;
+      background: linear-gradient(to bottom, rgba(91,140,247,0.4), rgba(167,139,250,0.1));
+      margin: 4px 0;
+    }
+    .tl-content { padding-bottom: 1.5rem; }
+    .tl-content h4 { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 0.2rem; }
+    .tl-content p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <img src="placeholder.png" alt="Profile Picture" class="profile-img">
-        <div class="intro column">
-                <h2>Introduction</h2>
-                <p>
-                     Welcome to ShivenBits, a blog talking abolut all the things in science and technology. From the latest innovations in AI and space travel, to the complex mysteries of the universe, you are sure to find something that perks your interests here.
-                     I love academics, my favorite subject in school being math and science. My favorite things to do in my free time include cubing geoguessr and playing minecraft. I have a few big achievements, most notable include getting selected for the gifted program at johns hopkins, and solving a rubik's cube in under 20 seconds. If I were to meet a famous person, it would be MrBeast or Fermat(ask him for $10000 and ask him for his last theorem respectively). If I were to have a superpower, it would be teleportation or flight. In the next 5 years I plan on Finishing 50 blogs on my blogs, Getting into my dream university: Harvard, Getting a top 100 rank in a math olympiad and learning Java.
 
+  <div id="progress-bar"></div>
+  <div class="mesh" aria-hidden="true"></div>
 
- 
-                </p>
-            </div><!-- end intro-->
-            
+  <nav aria-label="Primary navigation">
+    <div class="nav-inner">
+      <a href="index.html">Home</a>
+      <a href="aboutme.html" class="active">About Me</a>
+      <a href="blogs.html">STEM Blogs</a>
+      <a href="awards.html">Awards</a>
     </div>
+  </nav>
+
+  <main>
+
+    
+    <div class="profile-hero">
+      <div class="avatar-wrap">
+        <div class="avatar" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 3.58-7 8-7s8 3 8 7"/>
+          </svg>
+        </div>
+      </div>
+      <div class="hero-text">
+        
+        <h1><span class="name-accent">Shiven</span><br>Ghatate</h1>
+        <p class="tagline">New Delhi, India · The British School</p>
+      </div>
+    </div>
+
+    <div class="divider" role="separator"></div>
+
+    
+    <div class="content-grid">
+
+      <div class="glass-card">
+        <p class="card-label">Introduction</p>
+        <p>
+          Welcome to ShivenBits — a blog about all things science and technology.
+          From the latest innovations in AI and space travel to the complex mysteries
+          of the universe, you're sure to find something that <em>piques</em> your interest here.
+        </p>
+        <p style="margin-top: 1rem;">
+          I love academics — my favourite subjects being maths and science.
+          In my free time you'll find me speedcubing, playing GeoGuessr,
+          or diving into a good Minecraft session.
+        </p>
+      </div>
+
+      <div class="glass-card">
+        <p class="card-label">Quick Facts</p>
+        <ul class="fact-list">
+          <li class="fact-item">
+            <span class="fact-icon"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/><path d="M6 12v5c3.33 2 8.67 2 12 0v-5"/></svg></span>
+            <span class="fact-text">Selected for <strong>Johns Hopkins CTY</strong> Gifted Summer Program</span>
+          </li>
+          <li class="fact-item">
+            <span class="fact-icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
+            <span class="fact-text">Solved a Rubik's Cube in <strong>under 20 seconds</strong></span>
+          </li>
+          <li class="fact-item">
+            <span class="fact-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+            <span class="fact-text">Top 3 in school for <strong>Primary Maths Challenge</strong> Round 2</span>
+          </li>
+        </ul>
+      </div>
+
+      
+      <div class="glass-card">
+        <p class="card-label">Personality &amp; Quirks</p>
+        <p>
+          If I could meet anyone — living or historical — it'd be <strong>MrBeast</strong>
+          (ask him for $10,000) and <strong>Fermat</strong> (ask him to reveal that
+          last theorem he claimed was too large to fit in the margin).
+          Superpower of choice: teleportation
+        </p>
+        <div class="pill-row">
+          <span class="pill">Speedcubing</span>
+          <span class="pill">GeoGuessr</span>
+          <span class="pill">Minecraft</span>
+          <span class="pill">Mathematics</span>
+          <span class="pill">AI &amp; Space</span>
+          <span class="pill">Reading</span>
+        </div>
+      </div>
+
+      
+      <div class="glass-card">
+        <p class="card-label">Why ShivenBits?</p>
+        <p>
+          Science helps me understand the meaning behind the things and
+          processes around us — and this blog is my way of sharing that
+          understanding with the world. Expect deep dives into AI,
+          mathematics, cosmology, and everything in between.
+        </p>
+      </div>
+
+    </div>
+
+    
+    <div class="glass-card wide" style="opacity:0;transform:translateY(28px);">
+      <p class="card-label">Future Goals</p>
+      <h2>The 5-Year Roadmap</h2>
+      <div class="timeline" style="margin-top: 1.25rem;">
+
+        <div class="tl-item">
+          <div class="tl-dot-col">
+            <div class="tl-dot"></div>
+            <div class="tl-connector"></div>
+          </div>
+          <div class="tl-content">
+            <h4>Get into MIT</h4>
+            <p>The dream destination — applying with a portfolio spanning STEM research, writing, and competitive maths.</p>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-col">
+            <div class="tl-dot"></div>
+            <div class="tl-connector"></div>
+          </div>
+          <div class="tl-content">
+            <h4>Publish 50 Blogs on ShivenBits</h4>
+            <p>Half a hundred deep-dives into science, technology, and the ideas that shape our world.</p>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-col">
+            <div class="tl-dot"></div>
+            <div class="tl-connector"></div>
+          </div>
+          <div class="tl-content">
+            <h4>Top 100 Rank in a Maths Olympiad</h4>
+            <p>Competing at the highest level in mathematics — the sport of the mind.</p>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-col">
+            <div class="tl-dot"></div>
+          </div>
+          <div class="tl-content">
+            <h4>Learn Java</h4>
+            <p>Adding another language to the toolkit — because every great problem-solver needs the right tools.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const bar = document.getElementById('progress-bar');
+    window.addEventListener('scroll', () => {
+      const s = document.documentElement;
+      const pct = (s.scrollTop / (s.scrollHeight - s.clientHeight)) * 100;
+      bar.style.width = pct + '%';
+    }, { passive: true });
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl
+      .to('.avatar-wrap',    { opacity: 1, scale: 1, duration: 0.65 }, 0.2)
+      .to('.eyebrow',        { opacity: 1, y: 0, duration: 0.55 }, 0.35)
+      .to('.hero-text h1',   { opacity: 1, y: 0, duration: 0.75 }, 0.5)
+      .to('.hero-text .tagline', { opacity: 1, y: 0, duration: 0.55 }, 0.7)
+      .to('.divider',        { opacity: 1, duration: 0.5 }, 0.85);
+
+    gsap.utils.toArray('.glass-card').forEach((card, i) => {
+      gsap.to(card, {
+        opacity: 1, y: 0, duration: 0.65, ease: 'power2.out',
+        scrollTrigger: { trigger: card, start: 'top 90%', toggleActions: 'play none none none' },
+        delay: i * 0.05
+      });
+    });
+
+    
+    gsap.utils.toArray('.tl-dot').forEach((dot, i) => {
+      gsap.from(dot, {
+        scale: 0, opacity: 0, duration: 0.4, delay: i * 0.12, ease: 'back.out(1.5)',
+        scrollTrigger: { trigger: dot, start: 'top 92%', toggleActions: 'play none none none' }
+      });
+    });
+  </script>
 </body>
 </html>
