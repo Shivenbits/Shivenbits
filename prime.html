@@ -274,11 +274,15 @@
       border-radius: 14px;
       background: rgba(255,255,255,0.02);
       border: 1px solid var(--border);
+      border-top: 2px solid transparent;
+      border-image: linear-gradient(90deg, var(--accent), var(--electric)) 1;
+      border-image-slice: 0 0 0 0 / 0 0 0 0 / 0 fill;
       position: relative;
       overflow: hidden;
       transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
 
+    /* border-image doesn't work with border-radius; use pseudo instead */
     .card::before {
       content: '';
       position: absolute;
@@ -288,9 +292,23 @@
       border-radius: 14px 14px 0 0;
     }
 
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(56,189,248,0.08), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
     .card:hover {
       transform: translateY(-3px);
       box-shadow: 0 12px 40px rgba(56,189,248,0.12);
+    }
+
+    .card:hover::after {
+      opacity: 1;
     }
 
     .card-label {
@@ -301,6 +319,34 @@
       text-transform: uppercase;
       color: var(--accent);
       margin-bottom: 12px;
+    }
+
+    .card-value {
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-family: 'Lora', serif;
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    /* ─── Pull Quote ────────────────────────────────────────────────────────── */
+    .pull-quote {
+      margin: 40px 0;
+      padding: 24px 32px;
+      border-left: 3px solid var(--electric);
+      background: var(--electric-dim);
+      border-radius: 0 12px 12px 0;
+      font-size: 1.05rem;
+      font-style: italic;
+      color: #c4b5fd;
+      line-height: 1.65;
     }
 
     /* ─── Decay Curve ───────────────────────────────────────────────────────── */
@@ -357,6 +403,12 @@
       opacity: 1;
       transform: none;
     }
+
+    /* ─── Responsive ─────────────────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .wrapper { padding: 64px 18px 100px; }
+      .glass-panel { padding: 22px 20px; }
+    }
   </style>
 </head>
 <body>
@@ -367,75 +419,73 @@
 
     <div class="eyebrow">
       <div class="pi-badge">π</div>
-      <div class="eyebrow-text">Mathematics · <span>The Density of Primes</span></div>
+      <div class="eyebrow-text">Number Theory · <span>Density of Primes</span></div>
     </div>
 
-    <h1 class="hero-title">Why prime numbers become <em>rarer</em> as they grow</h1>
-    <p class="hero-lead">A look at the mathematical rule governing the distribution of prime numbers.</p>
+    <h1 class="hero-title">Why prime numbers become <em>rarer</em> as we count higher</h1>
+    <p class="hero-lead">An intuitive look at the Prime Number Theorem.</p>
 
     <div class="reveal">
-      <div class="section-label">The Core Rule</div>
+      <div class="section-label">The Discovery</div>
       <h2>The Prime Number Theorem</h2>
       <p>
-        To understand how primes are spread out, we use the function \(\pi(x)\), which simply counts how many primes exist up to a number \(x\). The Prime Number Theorem states that as \(x\) becomes very large:
+        If we let \(\pi(x)\) represent how many primes exist up to a number \(x\), the <strong>Prime Number Theorem</strong> tells us that this count follows a very specific trend as numbers get larger:
       </p>
 
       <div class="math-block hero-eq">
-        \[\pi(x) \approx \frac{x}{\ln(x)}\]
+        \[\pi(x)\approx\frac{x}{\log x}\]
       </div>
-      <p>This means the total count of primes is roughly the value of the number divided by its natural logarithm.</p>
     </div>
 
     <div class="divider reveal"></div>
 
     <div class="reveal">
-      <div class="section-label purple">The Proof</div>
-      <h2>Calculating the Density</h2>
+      <div class="section-label purple">The Intuition</div>
+      <h2>Calculating the "Density"</h2>
 
       <p>
-        The "density" of primes is the percentage of numbers that are prime within a certain range. We find this by dividing the count of primes \(\pi(x)\) by the total range of numbers \(x\):
+        To find the <strong>probability</strong> that a random number up to \(x\) is prime, we simply divide the number of primes by the total range of numbers:
       </p>
 
       <div class="glass-panel">
         <div class="math-block">
-          \[\text{Density} = \frac{\pi(x)}{x} \approx \frac{1}{\ln(x)}\]
+          \[\text{Density} = \frac{\pi(x)}{x} \approx \frac{1}{\log x}\]
         </div>
       </div>
 
       <p>
-        As the number \(x\) increases, its natural logarithm \(\ln(x)\) also increases. When you divide 1 by a number that keeps growing, the result gets smaller and smaller, eventually approaching zero:
+        Notice what happens as \(x\) grows toward infinity: the denominator (\(\log x\)) keeps getting bigger. This means the overall fraction gets closer and closer to zero.
       </p>
 
       <div class="glass-panel">
         <div class="math-block">
-          \[\lim_{x\to\infty} \frac{1}{\ln(x)} = 0\]
+          \[\lim_{x\to\infty} (\text{Prime Density}) = 0\]
         </div>
       </div>
-      <p>This decreasing result proves that primes occupy a smaller and smaller fraction of the number line as we count higher.</p>
     </div>
 
     <div class="reveal" style="margin-top: 40px;">
       <div class="cards">
         <div class="card reveal">
-          <div class="card-label">At 1 Million (\(10^6\))</div>
-          <p>The density is about 1 in 13.8 numbers.</p>
-          <div class="math-block" style="padding: 16px 0 0; text-align: left; color: var(--accent);">
-            \[\approx 7.2\%\]
+          <div class="card-label">Up to 1 Million</div>
+          <div class="math-block" style="padding: 16px 0 0; text-align: left;">
+            \[\approx 1 \text{ in } 14 \text{ numbers}\]
           </div>
+          <p class="card-desc">Roughly 7.2% of numbers are prime.</p>
         </div>
 
         <div class="card reveal">
-          <div class="card-label">At 1 Billion (\(10^9\))</div>
-          <p>The density drops to 1 in 20.7 numbers.</p>
-          <div class="math-block" style="padding: 16px 0 0; text-align: left; color: var(--accent);">
-            \[\approx 4.8\%\]
+          <div class="card-label">Up to 1 Billion</div>
+          <div class="math-block" style="padding: 16px 0 0; text-align: left;">
+            \[\approx 1 \text{ in } 21 \text{ numbers}\]
           </div>
+          <p class="card-desc">The density drops to roughly 4.8%.</p>
         </div>
       </div>
     </div>
 
     <div class="decay-curve-wrap reveal">
-      <div class="decay-label">Visualizing the drop in prime density →</div>
+      <div class="decay-label">The "Thinning Out" of Primes →</div>
       <svg class="decay-svg" viewBox="0 0 700 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
           <linearGradient id="curveGrad" x1="0" y1="0" x2="1" y2="0">
@@ -447,17 +497,61 @@
             <stop offset="0%"   stop-color="#38bdf8" stop-opacity="0.08"/>
             <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
           </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
         </defs>
+
         <line x1="30" y1="10" x2="30" y2="100" stroke="#334155" stroke-width="1"/>
         <line x1="30" y1="100" x2="690" y2="100" stroke="#334155" stroke-width="1"/>
-        <path d="M 30 10 C 60 28, 100 44, 150 60 C 200 72, 270 80, 360 87 C 450 92, 560 95, 690 98" fill="none" stroke="url(#curveGrad)" stroke-width="2.5" />
-        <text x="680" y="97" font-family="JetBrains Mono,monospace" font-size="9" fill="#334155" text-anchor="end">Density → 0</text>
+
+        <text x="360" y="116" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#475569">Value of x</text>
+        <text x="14" y="55" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#475569" transform="rotate(-90,14,55)">% Prime</text>
+
+        <path
+          d="M 30 10
+             C 60 28, 100 44, 150 60
+             C 200 72, 270 80, 360 87
+             C 450 92, 560 95, 690 98"
+          fill="url(#fillGrad)"
+          stroke="none"
+        />
+        <path
+          d="M 30 10
+             C 60 28, 100 44, 150 60
+             C 200 72, 270 80, 360 87
+             C 450 92, 560 95, 690 98
+             L 690 100 L 30 100 Z"
+          fill="url(#fillGrad)"
+          stroke="none"
+        />
+        <path
+          d="M 30 10
+             C 60 28, 100 44, 150 60
+             C 200 72, 270 80, 360 87
+             C 450 92, 560 95, 690 98"
+          fill="none"
+          stroke="url(#curveGrad)"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          filter="url(#glow)"
+        />
+
+        <circle cx="150" cy="60" r="4" fill="#a78bfa" opacity="0.9"/>
+        <text x="158" y="56" font-family="JetBrains Mono,monospace" font-size="9" fill="#a78bfa">7.2%</text>
+
+        <circle cx="310" cy="84" r="4" fill="#38bdf8" opacity="0.9"/>
+        <text x="318" y="80" font-family="JetBrains Mono,monospace" font-size="9" fill="#38bdf8">4.8%</text>
+
+        <line x1="30" y1="100" x2="690" y2="100" stroke="rgba(56,189,248,0.1)" stroke-width="1" stroke-dasharray="4,6"/>
+        <text x="680" y="97" font-family="JetBrains Mono,monospace" font-size="9" fill="#334155" text-anchor="end">→ 0%</text>
       </svg>
     </div>
 
     <footer class="reveal">
-      <p>Mathematical Foundation: Prime Number Theorem</p>
-      <p style="margin-top:6px;"><span>A study of numerical distribution</span></p>
+      <p>Based on the proofs of Hadamard & de la Vallée Poussin (1896)</p>
+      <p style="margin-top:6px;"><span>Typeset with MathJax · Blueprint theme</span></p>
     </footer>
 
   </div>
@@ -472,13 +566,15 @@
 
     const revealEls = document.querySelectorAll('.reveal');
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
+      entries.forEach((e, i) => {
         if (e.isIntersecting) {
+          e.target.style.transitionDelay = '0s';
           e.target.classList.add('visible');
           observer.unobserve(e.target);
         }
       });
     }, { threshold: 0.1 });
+
     revealEls.forEach(el => observer.observe(el));
   </script>
 </body>
