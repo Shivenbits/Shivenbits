@@ -3,80 +3,483 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Why Primes Become Rarer — A Simple Proof (PNT)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root{--bg:#0f1724;--card:#0b1220;--accent:#7dd3fc;--muted:#9aa6b2;--glass: rgba(255,255,255,0.03)}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;background: radial-gradient(circle at 10% 10%, rgba(125,211,252,0.06), transparent 8%), radial-gradient(circle at 90% 90%, rgba(99,102,241,0.04), transparent 12%), var(--bg);color:#e6eef6}
-    .container{max-width:900px;margin:40px auto;padding:28px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 6px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
-    header{display:flex;align-items:center;gap:16px}
-    .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#6366f1);display:flex;align-items:center;justify-content:center;font-weight:800;color:#04202b}
-    h1{margin:0;font-size:1.6rem}
-    p.lead{color:var(--muted);margin-top:8px}
-    .card{margin-top:20px;padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--glass)}
-    .math{font-size:1.05rem;line-height:1.6}
-    pre.code{background:rgba(2,6,23,0.6);padding:12px;border-radius:8px;overflow:auto;color:#dbeafe}
-    footer{margin-top:22px;color:var(--muted);font-size:0.88rem;text-align:center}
-    .examples{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
-    .example{flex:1 1 200px;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid rgba(255,255,255,0.02)}
-    .muted{color:var(--muted)}
-    a.cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:linear-gradient(90deg,var(--accent),#6366f1);color:#04202b;text-decoration:none;font-weight:600}
-    @media (max-width:600px){.container{margin:20px;padding:18px}.examples{flex-direction:column}}
-  </style>
-  <!-- MathJax for rendering LaTeX nicely -->
+  <title>Why Primes Become Rarer — A Proof via the Prime Number Theorem</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+
+  <style>
+    /* ─── Reset & Root ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #020617;
+      --surface:     rgba(255,255,255,0.025);
+      --border:      rgba(255,255,255,0.06);
+      --accent:      #38bdf8;
+      --accent-dim:  rgba(56,189,248,0.15);
+      --accent-glow: rgba(56,189,248,0.35);
+      --electric:    #a78bfa;
+      --electric-dim:rgba(167,139,250,0.12);
+      --text:        #e2e8f0;
+      --muted:       #64748b;
+      --subtle:      #334155;
+      --mono:        'JetBrains Mono', monospace;
+    }
+
+    /* ─── Progress Bar ──────────────────────────────────────────────────────── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--electric), var(--accent));
+      z-index: 1000;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    /* ─── Background Blueprint ──────────────────────────────────────────────── */
+    html, body {
+      min-height: 100%;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Lora', Georgia, serif;
+      line-height: 1.75;
+      font-size: 17px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(56,189,248,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56,189,248,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 10%, rgba(167,139,250,0.06), transparent),
+        radial-gradient(ellipse 50% 60% at 85% 80%, rgba(56,189,248,0.05), transparent);
+    }
+
+    /* ─── Layout ────────────────────────────────────────────────────────────── */
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 80px 28px 120px;
+    }
+
+    /* ─── Nav / Eyebrow ─────────────────────────────────────────────────────── */
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 52px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.1s forwards;
+    }
+
+    .pi-badge {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--electric), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono);
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #020617;
+      flex-shrink: 0;
+      box-shadow: 0 0 24px rgba(167,139,250,0.4);
+    }
+
+    .eyebrow-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .eyebrow-text span {
+      color: var(--accent);
+    }
+
+    /* ─── Hero Title ────────────────────────────────────────────────────────── */
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: #f1f5f9;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.2s forwards;
+    }
+
+    .hero-title em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--accent), var(--electric));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-lead {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 620px;
+      margin-bottom: 52px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.35s forwards;
+    }
+
+    /* ─── Divider ───────────────────────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 48px 0;
+    }
+
+    /* ─── Section Labels ─────────────────────────────────────────────────────── */
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(56,189,248,0.2);
+      backdrop-filter: blur(12px);
+    }
+
+    .section-label.purple {
+      color: var(--electric);
+      background: var(--electric-dim);
+      border-color: rgba(167,139,250,0.2);
+    }
+
+    /* ─── Body Typography ───────────────────────────────────────────────────── */
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin: 40px 0 12px;
+      letter-spacing: -0.015em;
+    }
+
+    p {
+      color: #94a3b8;
+      margin-bottom: 1.2em;
+    }
+
+    p strong {
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    code, .mono {
+      font-family: var(--mono);
+      font-size: 0.88em;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    /* ─── Glass Panels ──────────────────────────────────────────────────────── */
+    .glass-panel {
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 36px;
+      margin: 32px 0;
+    }
+
+    /* ─── Math Display ──────────────────────────────────────────────────────── */
+    .math-block {
+      text-align: center;
+      padding: 20px 0;
+      overflow-x: auto;
+    }
+
+    .math-block.hero-eq {
+      padding: 32px 20px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.04), rgba(167,139,250,0.04));
+      border-radius: 12px;
+      border: 1px solid rgba(56,189,248,0.1);
+      margin: 24px 0;
+      position: relative;
+    }
+
+    .math-block.hero-eq::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(167,139,250,0.2));
+      z-index: -1;
+      filter: blur(8px);
+    }
+
+    /* Make the hero MathJax larger */
+    .hero-eq .MathJax { font-size: 1.4em !important; }
+
+    /* ─── Insight Cards ─────────────────────────────────────────────────────── */
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 32px 0;
+    }
+
+    @media (max-width: 560px) {
+      .cards { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      padding: 24px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--electric));
+      border-radius: 14px 14px 0 0;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(56,189,248,0.12);
+    }
+
+    .card-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    /* ─── Decay Curve ───────────────────────────────────────────────────────── */
+    .decay-curve-wrap {
+      margin: 72px 0 0;
+      text-align: center;
+    }
+
+    .decay-label {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+      letter-spacing: 0.08em;
+    }
+
+    .decay-svg {
+      width: 100%;
+      max-width: 700px;
+      height: 120px;
+      display: block;
+      margin: 0 auto;
+      overflow: visible;
+    }
+
+    /* ─── Footer ────────────────────────────────────────────────────────────── */
+    footer {
+      margin-top: 80px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      color: var(--subtle);
+      letter-spacing: 0.04em;
+    }
+
+    footer span {
+      color: var(--muted);
+    }
+
+    /* ─── Animations ─────────────────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
 </head>
 <body>
-  <main class="container">
-    <header>
-      <div class="logo">π</div>
-      <div>
-        <h1>Why prime numbers become <em>rarer</em> — A short proof using the Prime Number Theorem</h1>
-        <p class="lead"> Equations are typeset with MathJax.</p>
+
+  <div id="progress-bar"></div>
+
+  <div class="wrapper">
+
+    <div class="eyebrow">
+      <div class="pi-badge">π</div>
+      <div class="eyebrow-text">Mathematics · <span>The Density of Primes</span></div>
+    </div>
+
+    <h1 class="hero-title">Why prime numbers become <em>rarer</em> as they grow</h1>
+    <p class="hero-lead">A look at the mathematical rule governing the distribution of prime numbers.</p>
+
+    <div class="reveal">
+      <div class="section-label">The Core Rule</div>
+      <h2>The Prime Number Theorem</h2>
+      <p>
+        To understand how primes are spread out, we use the function \(\pi(x)\), which simply counts how many primes exist up to a number \(x\). The Prime Number Theorem states that as \(x\) becomes very large:
+      </p>
+
+      <div class="math-block hero-eq">
+        \[\pi(x) \approx \frac{x}{\ln(x)}\]
       </div>
-    </header>
+      <p>This means the total count of primes is roughly the value of the number divided by its natural logarithm.</p>
+    </div>
 
-    <section class="card">
-      <article class="math">
-        <h2>Statement (Prime Number Theorem)</h2>
-        <p class="muted">Let \(\pi(x)\) denote the number of primes \(\le x\). The Prime Number Theorem (PNT) says</p>
-        <p style="font-size:1.05rem;margin-top:6px">\[\pi(x)\sim\frac{x}{\log x}\qquad(x\to\infty).\]</p>
+    <div class="divider reveal"></div>
 
-        <h2>From PNT to "primes get rarer"</h2>
-        <p class="muted">Divide both sides of the asymptotic relation by \(x\) to obtain the proportion of integers up to \(x\) that are prime:</p>
-        <p style="font-size:1.05rem;margin-top:6px">\[\frac{\pi(x)}{x}\sim\frac{1}{\log x}.\]</p>
-        <p class="muted">Since \(\log x\to\infty\) as \(x\to\infty\), the right-hand side tends to \(0\). Therefore</p>
-        <p style="font-size:1.05rem;margin-top:6px">\[\lim_{x\to\infty}\frac{\pi(x)}{x}=0.\]</p>
-        <p class="muted">Interpreting this probabilistically: the chance that a randomly chosen large integer near \(x\) is prime is about \(1/\log x\), which goes to zero as \(x\) grows. Hence primes become rarer.</p>
+    <div class="reveal">
+      <div class="section-label purple">The Proof</div>
+      <h2>Calculating the Density</h2>
 
-        <h3>Key probability approximation</h3>
-        <p class="muted">Using PNT we get</p>
-        <p class="math" style="margin-top:6px">\[\mathbb{P}({n\text{ is prime}})\approx\frac{\pi(n)}{n}\approx\frac{1}{\ln n}.\]</p>
+      <p>
+        The "density" of primes is the percentage of numbers that are prime within a certain range. We find this by dividing the count of primes \(\pi(x)\) by the total range of numbers \(x\):
+      </p>
 
-        <div class="examples">
-          <div class="example">
-            <strong>Example: \(n=10^6\)</strong>
-            <p class="muted">\[\frac{1}{\ln(10^6)}\approx\frac{1}{13.8155}\approx 0.0723\quad(\approx7.23\%).\]</p>
-          </div>
+      <div class="glass-panel">
+        <div class="math-block">
+          \[\text{Density} = \frac{\pi(x)}{x} \approx \frac{1}{\ln(x)}\]
+        </div>
+      </div>
 
-          <div class="example">
-            <strong>Example: \(n=10^9\)</strong>
-            <p class="muted">\[\frac{1}{\ln(10^9)}\approx\frac{1}{20.7233}\approx 0.0483\quad(\approx4.83\%).\]</p>
+      <p>
+        As the number \(x\) increases, its natural logarithm \(\ln(x)\) also increases. When you divide 1 by a number that keeps growing, the result gets smaller and smaller, eventually approaching zero:
+      </p>
+
+      <div class="glass-panel">
+        <div class="math-block">
+          \[\lim_{x\to\infty} \frac{1}{\ln(x)} = 0\]
+        </div>
+      </div>
+      <p>This decreasing result proves that primes occupy a smaller and smaller fraction of the number line as we count higher.</p>
+    </div>
+
+    <div class="reveal" style="margin-top: 40px;">
+      <div class="cards">
+        <div class="card reveal">
+          <div class="card-label">At 1 Million (\(10^6\))</div>
+          <p>The density is about 1 in 13.8 numbers.</p>
+          <div class="math-block" style="padding: 16px 0 0; text-align: left; color: var(--accent);">
+            \[\approx 7.2\%\]
           </div>
         </div>
 
-        <h3>Intuition (divisibility perspective)</h3>
-        <p class="muted">A number is prime if it avoids divisibility by any smaller prime. As \(n\) grows, there are more small primes that could divide it, so the constraint set grows. The PNT encapsulates this cumulative effect by showing the density of primes drops like \(1/\log n\).</p>
+        <div class="card reveal">
+          <div class="card-label">At 1 Billion (\(10^9\))</div>
+          <p>The density drops to 1 in 20.7 numbers.</p>
+          <div class="math-block" style="padding: 16px 0 0; text-align: left; color: var(--accent);">
+            \[\approx 4.8\%\]
+          </div>
+        </div>
+      </div>
+    </div>
 
-        <h3>Remark (elementary bounds)</h3>
-        <p class="muted">If you prefer an elementary (weaker) route, Chebyshev proved that for large \(x\) there are positive constants \(c_1,c_2\) with</p>
-        <p class="math">\[c_1\frac{x}{\log x}\le\pi(x)\le c_2\frac{x}{\log x},\]</p>
-        <p class="muted">which also implies \(\pi(x)/x\to0\) as \(x\to\infty\).</p>
+    <div class="decay-curve-wrap reveal">
+      <div class="decay-label">Visualizing the drop in prime density →</div>
+      <svg class="decay-svg" viewBox="0 0 700 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="curveGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stop-color="#a78bfa" stop-opacity="0.9"/>
+            <stop offset="50%"  stop-color="#38bdf8" stop-opacity="0.7"/>
+            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.15"/>
+          </linearGradient>
+          <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#38bdf8" stop-opacity="0.08"/>
+            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <line x1="30" y1="10" x2="30" y2="100" stroke="#334155" stroke-width="1"/>
+        <line x1="30" y1="100" x2="690" y2="100" stroke="#334155" stroke-width="1"/>
+        <path d="M 30 10 C 60 28, 100 44, 150 60 C 200 72, 270 80, 360 87 C 450 92, 560 95, 690 98" fill="none" stroke="url(#curveGrad)" stroke-width="2.5" />
+        <text x="680" y="97" font-family="JetBrains Mono,monospace" font-size="9" fill="#334155" text-anchor="end">Density → 0</text>
+      </svg>
+    </div>
 
-      </article>
-
+    <footer class="reveal">
+      <p>Mathematical Foundation: Prime Number Theorem</p>
+      <p style="margin-top:6px;"><span>A study of numerical distribution</span></p>
     </footer>
-  </main>
+
+  </div>
+
+  <script>
+    const bar = document.getElementById('progress-bar');
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = (scrolled / total * 100) + '%';
+    }, { passive: true });
+
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    revealEls.forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
