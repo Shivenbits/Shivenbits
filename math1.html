@@ -2,132 +2,737 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ShivenBits Math Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShivenBits: Fun with Numbers</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- MathJax for LaTeX -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
   <style>
+    :root {
+      --paper: #faf8f3;
+      --ink: #1c1917;
+      --accent: #f97316;
+      --accent-light: #fff7ed;
+      --blue: #3b82f6;
+      --blue-light: #eff6ff;
+      --green: #10b981;
+      --red: #ef4444;
+      --red-light: #fef2f2;
+      --muted: #78716c;
+      --border: #e7e5e4;
+      --shadow: rgba(0,0,0,0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      line-height: 1.6;
-      background: linear-gradient(to right, #ffe5b4, #ffecd2);
-      color: #333;
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--paper);
+      color: var(--ink);
+      line-height: 1.8;
+      letter-spacing: 0.01em;
+      background-image:
+        radial-gradient(circle at 20px 20px, #e7e5e4 1px, transparent 0),
+        radial-gradient(circle at 60px 60px, #e7e5e4 1px, transparent 0);
+      background-size: 80px 80px;
     }
 
-    .container {
-      max-width: 850px;
-      margin: 40px auto;
-      padding: 40px 30px;
-      background-color: #fffaf3;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      border-radius: 15px;
+    /* ── Progress Bar ── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), #fbbf24);
+      width: 0%; z-index: 9999;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 8px rgba(249,115,22,0.5);
     }
 
-    h1 {
-      font-size: 2.8rem;
-      margin-bottom: 40px;
+    /* ── Header ── */
+    .site-header {
+      background: var(--paper);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(8px);
+      background: rgba(250,248,243,0.92);
+    }
+    .logo {
+      font-family: 'Lora', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .logo span { color: var(--accent); }
+
+    .tag-pill {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--accent-light);
+      color: var(--accent);
+      border: 1px solid #fed7aa;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 760px;
+      margin: 4rem auto 3rem;
+      padding: 0 2rem;
       text-align: center;
-      color: #d35400;
+    }
+    .hero-label {
+      font-family: 'Architects Daughter', cursive;
+      font-size: 0.9rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .hero h1 {
+      font-family: 'Lora', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--ink);
+      margin-bottom: 1.2rem;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto;
     }
 
-    h2 {
-      font-size: 2rem;
-      margin-top: 40px;
-      color: #c0392b;
+    /* ── Table of Contents ── */
+    .toc {
+      max-width: 760px;
+      margin: 0 auto 4rem;
+      padding: 0 2rem;
+    }
+    .toc-inner {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      display: flex; flex-wrap: wrap; gap: 0.75rem;
+      box-shadow: 0 2px 12px var(--shadow);
+    }
+    .toc-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.9rem; font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--paper);
+      transition: all 0.2s;
+    }
+    .toc-item:hover {
+      color: var(--accent); border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .toc-num {
+      font-family: 'Lora', serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: var(--accent);
     }
 
-    h3 {
-      font-size: 1.15rem;
-      color: #7f8c8d;
-      margin-top: 15px;
-      font-weight: normal;
+    /* ── Main Container ── */
+    .main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 2rem 6rem;
     }
 
-    p {
-      margin-top: 15px;
+    /* ── Section ── */
+    .section {
+      margin-bottom: 5rem;
+    }
+    .section-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .section-badge::before {
+      content: '';
+      display: inline-block;
+      width: 18px; height: 2px;
+      background: var(--accent);
+    }
+    .section h2 {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.5rem, 3.5vw, 2rem);
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--ink);
+      margin-bottom: 1.2rem;
+    }
+    .section p {
+      color: #44403c;
       font-size: 1rem;
-      color: #444;
+      margin-bottom: 1rem;
     }
 
-    .spacer {
-      height: 80px;
-      border-bottom: 2px dashed #f5cba7;
-      margin-top: 30px;
+    /* ── Separator ── */
+    .separator {
+      position: relative;
+      height: 60px;
+      margin: 4rem 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .separator::before {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; top: 50%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), var(--border), transparent);
+    }
+    .separator-icon {
+      background: var(--paper);
+      padding: 0 1rem;
+      position: relative;
+      z-index: 1;
+      display: flex; gap: 6px;
+    }
+    .separator-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .separator-dot:nth-child(2) { background: var(--accent); opacity: 0.5; }
+
+    /* ── Callout ── */
+    .callout {
+      border-radius: 14px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      display: flex; gap: 1rem; align-items: flex-start;
+      border: 1px solid transparent;
+    }
+    .callout-icon {
+      flex-shrink: 0;
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .callout-body { flex: 1; }
+    .callout-label {
+      font-family: 'Architects Daughter', cursive;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    .callout-text {
+      font-size: 0.95rem;
+      line-height: 1.7;
     }
 
-    .blog-image {
-      width: 100%;
-      max-height: 400px;
-      object-fit: contain;
-      margin: 20px 0;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    .callout-blue {
+      background: var(--blue-light);
+      border-color: #bfdbfe;
+    }
+    .callout-blue .callout-icon { background: #dbeafe; }
+    .callout-blue .callout-label { color: #1d4ed8; }
+    .callout-blue .callout-text { color: #1e40af; }
+
+    .callout-orange {
+      background: var(--accent-light);
+      border-color: #fed7aa;
+    }
+    .callout-orange .callout-icon { background: #ffedd5; }
+    .callout-orange .callout-label { color: #c2410c; }
+    .callout-orange .callout-text { color: #9a3412; }
+
+    .callout-green {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+    .callout-green .callout-icon { background: #dcfce7; }
+    .callout-green .callout-label { color: #166534; }
+    .callout-green .callout-text { color: #15803d; }
+
+    /* ── Warning Box (for Fake Proof) ── */
+    .danger-box {
+      background: var(--red-light);
+      border: 2px solid #fecaca;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .danger-header {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 700; font-size: 0.85rem;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      color: #b91c1c;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #fecaca;
+    }
+
+    /* ── Chalkboard Code Block ── */
+    .chalkboard {
+      background: #1e1b18;
+      border-radius: 14px;
+      overflow: hidden;
+      margin: 1rem 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .chalkboard-header {
+      background: #2c2825;
+      padding: 0.6rem 1rem;
+      display: flex; align-items: center; gap: 6px;
+      border-bottom: 1px solid #3d3733;
+    }
+    .chalk-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .chalk-dot:nth-child(1) { background: #ef4444; }
+    .chalk-dot:nth-child(2) { background: #f59e0b; }
+    .chalk-dot:nth-child(3) { background: #10b981; }
+    .chalkboard-title {
+      margin-left: 8px;
+      font-size: 0.75rem;
+      color: #a8a29e;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .chalkboard-body {
+      padding: 1.5rem;
+      font-family: 'Architects Daughter', cursive;
+      font-size: 1rem;
+      line-height: 2;
+      color: #e7e5e4;
+    }
+    .chalkboard-body .step { color: #86efac; }
+    .chalkboard-body .result { color: #fbbf24; font-weight: bold; }
+    .chalkboard-body .error { color: #f87171; }
+    .chalkboard-body .comment { color: #a8a29e; font-size: 0.85em; }
+
+    /* ── Step Cards ── */
+    .step-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .step-card {
+      display: flex; align-items: flex-start; gap: 1rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.1rem 1.3rem;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 4px var(--shadow);
+      cursor: default;
+    }
+    .step-card:hover {
+      border-color: var(--accent);
+      transform: translateX(4px);
+      box-shadow: -4px 0 0 var(--accent), 0 4px 16px rgba(249,115,22,0.1);
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      border-radius: 10px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Lora', serif;
+      border: 1px solid #fed7aa;
+    }
+    .step-content { flex: 1; }
+    .step-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+    .step-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .step-example {
+      display: inline-block;
+      margin-top: 6px;
+      font-family: 'Architects Daughter', cursive;
+      font-size: 1rem;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 2px 10px;
+      border-radius: 6px;
+    }
+
+    /* ── Handwritten Notes ── */
+    .handwritten {
+      font-family: 'Architects Daughter', cursive;
+      font-size: 1.05rem;
+      line-height: 2;
+      color: #292524;
+    }
+    .handwritten strong {
+      color: var(--accent);
+    }
+
+    /* ── Shortcut Box ── */
+    .shortcut-box {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    .shortcut-label {
+      font-family: 'Architects Daughter', cursive;
+      font-size: 0.85rem;
+      color: var(--blue);
+      margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .shortcut-formula {
+      font-family: 'Lora', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--ink);
+      text-align: center;
+      padding: 1rem;
+      background: var(--blue-light);
+      border-radius: 10px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Inline Math highlight ── */
+    .math-hl {
+      background: #fffbeb;
+      border-radius: 4px;
+      padding: 1px 5px;
+      border-bottom: 2px solid #fbbf24;
+    }
+
+    /* ── Conclusion ── */
+    .conclusion {
+      background: linear-gradient(135deg, #fff7ed, #eff6ff);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      text-align: center;
+    }
+    .conclusion h2 {
+      font-family: 'Lora', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 1rem;
+    }
+    .conclusion p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 500px;
+      margin: 0 auto 1rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .section {
+      animation: fadeUp 0.5s ease both;
+    }
+    .section:nth-child(2) { animation-delay: 0.1s; }
+    .section:nth-child(3) { animation-delay: 0.2s; }
+    .section:nth-child(4) { animation-delay: 0.3s; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .site-header { padding: 0.75rem 1rem; }
+      .main { padding: 0 1rem 4rem; }
+      .hero { padding: 0 1rem; margin: 2.5rem auto 2rem; }
+      .toc { padding: 0 1rem; }
+      .conclusion { padding: 1.75rem 1.25rem; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>ShivenBits: Fun with Numbers</h1>
 
-    <h2>1. Multiply Any Number by 11 in Seconds</h2>
-    <p>Since 11 is the first real palindromic number, I was wondering if there is any way to speed up the multiplication process. While experimenting, I found this trick to multiply any 3-digit number by 11 in seconds.</p>
-
-    <h3>🔹 The Two-Digit Shortcut</h3>
-    <p>Take any two-digit number. Add the two digits. Write the answer as (first digit) (sum) (second digit). For example:</p>
-    <p><strong>52 →</strong> 5 + 2 = 7 → <strong>Answer: 572</strong></p>
-
-    <h3>🔹 What About 3-Digit Numbers?</h3>
-    <p>I’m still exploring how this pattern expands to 3-digit numbers. I’ve found a way that works but will be digging deeper to understand why it behaves that way mathematically.</p>
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
 
 
-    <div class="spacer"></div>
+<!-- Hero -->
+<section class="hero">
+  <span class="hero-label">✦ Discoveries in Mathematics</span>
+  <h1>Fun with Numbers</h1>
+  <p>Exploring the hidden patterns, surprising tricks, and beautiful logic that make mathematics delightful.</p>
+</section>
 
-    <h2>2. The Reversing 1089 Trick</h2>
-    <p>We were exploring special numbers online and discovered this fun trick involving 3-digit numbers and a surprising result—1089!</p>
-
-    <h3>🔹 How It Works</h3>
-    <ul>
-      <li>Choose any 3-digit number where the first and last digits differ by at least 2. (e.g., 521)</li>
-      <li>Reverse the digits: 125</li>
-      <li>Subtract the smaller from the larger: 521 - 125 = 396</li>
-      <li>Reverse the result: 693</li>
-      <li>Add them: 396 + 693 = <strong>1089</strong></li>
-    </ul>
-
-    <h3>🔹 Why Does It Fail Sometimes?</h3>
-    <p>This process fails when the difference between the first and last digits is less than 2. The math behind why that happens is something we’re still curious to understand!</p>
-
-
-    <div class="spacer"></div>
-
-    <h2>3. Why Does Dividing by 0 Break Math?</h2>
-    
-    <h3>🔹 Division as Intuition</h3>
-    <p>Division has always felt intuitive—like asking, "How many times does one number go into another?" For example, 12 ÷ 3 just means how many times 3 goes into 12 (which is 4). But what about 12 ÷ 0? That would mean how many times 0 goes into 12. That question doesn’t make any sense!</p>
-
-    <h3>🔹 A Misleading “Proof” that 1 = 2</h3>
-    <p>Some people try to "prove" wrong things using division by zero. Here's one such fake proof:</p>
-    <pre>
-Let a = b
-Then a² = ab
-a² - b² = ab - b²
-(a - b)(a + b) = b(a - b)
-Canceling (a - b): a + b = b
-Since a = b: b + b = b → 2b = b → 2 = 1 ❌
-    </pre>
-    <p>Why is this wrong? Because you’re dividing both sides by (a - b), which is zero. That breaks the rules of math!</p>
-
-    <h3>🔹 Final Thoughts: The Fragility of Math Rules</h3>
-    <p>So from both intuitive and mathematical views, dividing by 0 leads to undefined or broken logic—and that’s why it’s simply not allowed in math!</p>
-
-    <div class="spacer"></div>
-
-    <h2>Conclusion</h2>
-    <h3>🔹 The Power of Curiosity in Math</h3>
-    <p>Each of these tricks teaches us that asking “why” can take you deeper into understanding math—not just how to solve problems, but why things work.</p>
-
-    <h3>🔹 Keep Exploring!</h3>
-    <p>Math isn’t just about formulas—it’s full of puzzles, patterns, and hidden surprises. Stay curious and keep asking questions!</p>
+<!-- Table of Contents -->
+<div class="toc">
+  <div class="toc-inner">
+    <a href="#multiply11" class="toc-item"><span class="toc-num">01</span> Multiply by 11</a>
+    <a href="#trick1089" class="toc-item"><span class="toc-num">02</span> The 1089 Trick</a>
+    <a href="#divzero" class="toc-item"><span class="toc-num">03</span> Division by Zero</a>
   </div>
+</div>
+
+<!-- Main Content -->
+<main class="main">
+
+  <!-- ── Section 1: Multiply by 11 ── -->
+  <article class="section" id="multiply11">
+    <div class="section-badge">Trick 01</div>
+    <h2>Multiply Any Number by 11 in Seconds</h2>
+    <p>Since $11$ is the first real palindromic number, I wondered whether there's a way to speed up multiplication. While experimenting, I found a pattern that makes multiplying by $11$ almost instant.</p>
+
+    <div class="callout callout-blue">
+      <div class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>
+      </div>
+      <div class="callout-body">
+        <div class="callout-label">Did You Know?</div>
+        <div class="callout-text">$11$ is special because it's a <em>repunit prime</em> — a number made of repeated digits. This structure is exactly why the multiplication trick works so elegantly!</div>
+      </div>
+    </div>
+
+    <div class="shortcut-box">
+      <div class="shortcut-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        The Two-Digit Shortcut
+      </div>
+      <div class="shortcut-formula">
+        $\overline{ab} \times 11 = \overline{a \;(a+b)\; b}$
+      </div>
+    </div>
+
+    <p class="handwritten">Take any two-digit number. Add the two digits. Sandwich the sum between them. That's it! ✦</p>
+
+    <div class="callout callout-orange">
+      <div class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+      <div class="callout-body">
+        <div class="callout-label">Pro Tip — Example</div>
+        <div class="callout-text">
+          Take $52$. We compute $5 + 2 = 7$, then place it between the digits:<br/>
+          $$52 \times 11 = 5\underbrace{7}_{5+2}2 = \mathbf{572}$$
+          Verify: $52 \times 11 = 52 \times 10 + 52 = 520 + 52 = 572$ ✓
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="callout-body">
+        <div class="callout-label">What About 3-Digit Numbers?</div>
+        <div class="callout-text">I've found a method that works — and I'm still digging into the mathematical reason <em>why</em> the pattern extends so naturally. Stay tuned for a follow-up post!</div>
+      </div>
+    </div>
+  </article>
+
+  <div class="separator"><div class="separator-icon"><div class="separator-dot"></div><div class="separator-dot"></div><div class="separator-dot"></div></div></div>
+
+  <!-- ── Section 2: 1089 Trick ── -->
+  <article class="section" id="trick1089">
+    <div class="section-badge">Trick 02</div>
+    <h2>The Reversing 1089 Trick</h2>
+    <p>While exploring special numbers, we discovered a surprising result — no matter which qualifying 3-digit number you pick, the same number always appears at the end: <strong class="math-hl">$1089$</strong>.</p>
+
+    <div class="callout callout-blue">
+      <div class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>
+      </div>
+      <div class="callout-body">
+        <div class="callout-label">Did You Know?</div>
+        <div class="callout-text">$1089 = 33^2$. It also equals $\frac{9 \times 11 \times 11}{1}$. Some mathematicians call it a <em>Kaprekar-type constant</em> for 3-digit numbers!</div>
+      </div>
+    </div>
+
+    <p style="font-weight:600; color: var(--ink); margin-bottom: 0.5rem;">Follow these steps with any qualifying number:</p>
+    <div class="step-cards">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Pick a 3-digit number</div>
+          <div class="step-desc">The first and last digits must differ by at least $2$.</div>
+          <span class="step-example">e.g., 521</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Reverse the digits</div>
+          <div class="step-desc">Write the number backwards.</div>
+          <span class="step-example">521 → 125</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Subtract the smaller from the larger</div>
+          <div class="step-desc">Always subtract the smaller reversed number from the original.</div>
+          <span class="step-example">521 − 125 = 396</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Reverse the result</div>
+          <div class="step-desc">Flip the answer you just got.</div>
+          <span class="step-example">396 → 693</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">Add the two numbers</div>
+          <div class="step-desc">Add the result and its reverse — and behold!</div>
+          <span class="step-example">396 + 693 = <strong style="color:var(--accent)">1089 ✦</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-orange">
+      <div class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <div class="callout-body">
+        <div class="callout-label">⚠ Why Does It Fail Sometimes?</div>
+        <div class="callout-text">If the first and last digits differ by less than $2$, the intermediate subtraction doesn't produce a "valid" 3-digit difference — the mechanism breaks. Understanding <em>exactly why</em> is a great exercise in algebraic thinking. Let $\overline{abc}$ be the number and work through the algebra!</div>
+      </div>
+    </div>
+  </article>
+
+  <div class="separator"><div class="separator-icon"><div class="separator-dot"></div><div class="separator-dot"></div><div class="separator-dot"></div></div></div>
+
+  <!-- ── Section 3: Division by Zero ── -->
+  <article class="section" id="divzero">
+    <div class="section-badge">Deep Dive 03</div>
+    <h2>Why Does Dividing by Zero Break Math?</h2>
+    <p>Division has always felt intuitive — asking <em>"how many times does one number go into another?"</em> For example, $12 \div 3 = 4$ means $3$ goes into $12$ exactly four times. But $12 \div 0$? That asks how many times $0$ goes into $12$ — a question with no sensible answer.</p>
+
+    <div class="callout callout-blue">
+      <div class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>
+      </div>
+      <div class="callout-body">
+        <div class="callout-label">The Limit Perspective</div>
+        <div class="callout-text">
+          In calculus, we can ask: what happens to $\frac{1}{x}$ as $x \to 0$? From the right, it grows to $+\infty$. From the left, it falls to $-\infty$. Since there's no single value the limit approaches, we call $\frac{1}{0}$ <em>undefined</em> — not infinity, not zero.
+        </div>
+      </div>
+    </div>
+
+    <p>Here's a classic example of what goes wrong when someone sneaks a division by zero into a proof:</p>
+
+    <!-- Danger Box + Chalkboard -->
+    <div class="danger-box">
+      <div class="danger-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Logical Fallacy — Fake Proof that $1 = 2$
+      </div>
+
+      <div class="chalkboard">
+        <div class="chalkboard-header">
+          <div class="chalk-dot"></div>
+          <div class="chalk-dot"></div>
+          <div class="chalk-dot"></div>
+          <span class="chalkboard-title">proof.math — ⚠ CONTAINS ERROR</span>
+        </div>
+        <div class="chalkboard-body">
+          <div><span class="step">Step 1.</span>  Let $a = b$</div>
+          <div><span class="step">Step 2.</span>  Then $a^2 = ab$</div>
+          <div><span class="step">Step 3.</span>  Subtract $b^2$: $a^2 - b^2 = ab - b^2$</div>
+          <div><span class="step">Step 4.</span>  Factor: $(a-b)(a+b) = b(a-b)$</div>
+          <div><span class="error">Step 5. ✗</span> Cancel $(a - b)$: $a + b = b$</div>
+          <div><span class="step">Step 6.</span>  Since $a = b$: $b + b = b$</div>
+          <div class="result">∴  $2 = 1$ &nbsp;&nbsp;&nbsp; ❌ WRONG</div>
+          <br/>
+          <div class="comment"># Error in Step 5: since a = b, we have (a - b) = 0.</div>
+          <div class="comment"># Dividing both sides by 0 is not allowed — it breaks math!</div>
+        </div>
+      </div>
+
+      <p style="font-size:0.9rem; color:#b91c1c; margin-top:1rem; line-height:1.7;">
+        The hidden trap: since $a = b$, the factor $(a - b) = 0$. Cancelling it from both sides is equivalent to dividing by zero — which is why this "proof" produces nonsense.
+      </p>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="callout-body">
+        <div class="callout-label">Final Takeaway</div>
+        <div class="callout-text">
+          From both an intuitive and formal standpoint, $\frac{a}{0}$ is <strong>undefined</strong>. Math's rule against it isn't arbitrary — it's what keeps our entire logical framework consistent. Violate it, and you can "prove" anything.
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Conclusion -->
+  <div class="conclusion">
+    <div style="font-size:2rem; margin-bottom:1rem;">✦</div>
+    <h2>Keep Asking Why</h2>
+    <p>Each of these tricks reveals that mathematics isn't just about solving problems — it's about understanding <em>why</em> things work the way they do.</p>
+    <p>Math is full of patterns, paradoxes, and hidden surprises. Stay curious. The best discoveries come from asking one more question.</p>
+    <div style="margin-top:1.5rem;">
+      <span class="tag-pill">ShivenBits</span>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Built with MathJax & Tailwind CSS
+</footer>
+
+<script>
+  // Reading Progress Bar
+  const bar = document.getElementById('progress-bar');
+  window.addEventListener('scroll', () => {
+    const scrollTop = document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    bar.style.width = (scrollTop / height * 100) + '%';
+  });
+</script>
 </body>
 </html>
