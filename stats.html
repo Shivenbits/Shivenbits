@@ -1,280 +1,844 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Casino Game Outcomes</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8fafc;
-            color: #1f2937;
-            padding: 20px;
-            margin: 0;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 768px;
-            margin: 0 auto;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #ccc;
-        }
-        .header h1 {
-            font-size: 32px;
-            margin: 0;
-            color: #3b82f6;
-        }
-        .card {
-            background-color: #ffffff;
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .playerborder {
-            border: 4px solid #10b981;
-        }
-        .houseborder {
-            border: 4px solid #ef4444;
-        }
-        .neutralborder {
-            border: 4px solid #3b82f6;
-        }
-        .playertitle {
-            color: #10b981;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        .housetitle {
-            color: #ef4444;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        .neutraltitle {
-            color: #3b82f6;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        .infobox {
-            padding: 15px;
-            border-radius: 6px;
-            margin-top: 15px;
-        }
-        .playerinfo {
-            background-color: rgba(16, 185, 129, 0.1);
-        }
-        .houseinfo {
-            background-color: rgba(239, 68, 68, 0.1);
-        }
-        .neutralinfo {
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-        .footer {
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid #ccc;
-            color: #6b7280;
-            font-size: 14px;
-        }
-        .mathtable {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        .mathtable th, .mathtable td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-        .mathtable th {
-            background-color: #f2f2f2;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casino Game Statistics — A Mathematical Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  })"></script>
+<style>
+  :root {
+    --bg: #0c0f14;
+    --bg2: #111622;
+    --bg3: #161d2e;
+    --border: rgba(255,255,255,0.07);
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --emerald: #34d399;
+    --emerald-dim: rgba(52,211,153,0.12);
+    --emerald-glow: rgba(52,211,153,0.25);
+    --rose: #fb7185;
+    --rose-dim: rgba(251,113,133,0.12);
+    --rose-glow: rgba(251,113,133,0.25);
+    --blue: #60a5fa;
+    --blue-dim: rgba(96,165,250,0.12);
+    --gold: #fbbf24;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 0 60px;
+    text-align: center;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(251,191,36,0.3);
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+    background: rgba(251,191,36,0.06);
+  }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    line-height: 1.15;
+    background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 60%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 24px;
+  }
+
+  .hero-intro {
+    max-width: 680px;
+    margin: 0 auto 40px;
+    color: #94a3b8;
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.8;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.6rem;
+    font-weight: 500;
+    display: block;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-stat-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .ev-positive { color: var(--emerald); }
+  .ev-negative { color: var(--rose); }
+  .ev-neutral  { color: var(--blue); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border) 30%, var(--border) 70%, transparent);
+    margin: 48px 0;
+  }
+
+  /* ── CONCEPTS GRID ── */
+  .concepts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 64px;
+  }
+
+  .concept-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    transition: border-color 0.2s;
+  }
+
+  .concept-card:hover { border-color: rgba(255,255,255,0.15); }
+
+  .concept-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    font-size: 18px;
+  }
+
+  .concept-card h3 {
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .concept-card p {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    line-height: 1.65;
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .section-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-emerald { background: var(--emerald); box-shadow: 0 0 12px var(--emerald-glow); }
+  .dot-rose    { background: var(--rose);    box-shadow: 0 0 12px var(--rose-glow); }
+
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+
+  .tag-emerald { background: var(--emerald-dim); color: var(--emerald); }
+  .tag-rose    { background: var(--rose-dim);    color: var(--rose); }
+
+  /* ── GAME CARD ── */
+  .game-card {
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 56px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .game-card-a {
+    background: linear-gradient(145deg, #0f1f1a 0%, var(--bg2) 60%);
+    border: 1px solid rgba(52,211,153,0.2);
+  }
+
+  .game-card-b {
+    background: linear-gradient(145deg, #1f0f14 0%, var(--bg2) 60%);
+    border: 1px solid rgba(251,113,133,0.2);
+  }
+
+  .game-card::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.07;
+  }
+
+  .game-card-a::before { background: radial-gradient(circle, var(--emerald), transparent 70%); }
+  .game-card-b::before { background: radial-gradient(circle, var(--rose), transparent 70%); }
+
+  .game-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.9rem;
+    margin: 16px 0 6px;
+  }
+
+  .game-card-a h2 { color: var(--emerald); }
+  .game-card-b h2 { color: var(--rose); }
+
+  .game-subtitle {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 400;
+    margin-bottom: 24px;
+  }
+
+  .game-description {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin-bottom: 28px;
+  }
+
+  /* ── RULES LIST ── */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .rule-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    color: #cbd5e1;
+  }
+
+  .rule-bullet {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .bullet-emerald { background: var(--emerald); }
+  .bullet-rose    { background: var(--rose); }
+
+  /* ── SUB HEADING ── */
+  .sub-heading {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sub-heading::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── PROBABILITY PILLS ── */
+  .prob-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .prob-pill {
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid;
+  }
+
+  .prob-pill-emerald {
+    background: var(--emerald-dim);
+    border-color: rgba(52,211,153,0.25);
+  }
+
+  .prob-pill-rose {
+    background: var(--rose-dim);
+    border-color: rgba(251,113,133,0.25);
+  }
+
+  .prob-label { font-size: 0.82rem; color: var(--muted); margin-bottom: 4px; }
+  .prob-value { font-family: 'DM Mono', monospace; font-size: 1.35rem; font-weight: 500; }
+  .prob-value-emerald { color: var(--emerald); }
+  .prob-value-rose    { color: var(--rose); }
+  .prob-badge { font-size: 0.72rem; padding: 4px 10px; border-radius: 100px; font-weight: 600; }
+  .badge-win  { background: var(--emerald-dim); color: var(--emerald); }
+  .badge-loss { background: var(--rose-dim);    color: var(--rose); }
+
+  /* ── TABLES ── */
+  .table-wrap {
+    overflow-x: auto;
+    margin-bottom: 32px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  thead tr {
+    background: rgba(0,0,0,0.3);
+  }
+
+  thead th {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 14px 18px;
+    text-align: left;
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr {
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+
+  tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+
+  tbody tr:hover { background: rgba(255,255,255,0.04); }
+
+  tbody td {
+    padding: 13px 18px;
+    color: #cbd5e1;
+  }
+
+  .td-mono { font-family: 'DM Mono', monospace; font-size: 0.85rem; }
+
+  .td-gain-pos { color: var(--emerald); font-family: 'DM Mono', monospace; font-weight: 500; }
+  .td-gain-neg { color: var(--rose);    font-family: 'DM Mono', monospace; font-weight: 500; }
+
+  .outcome-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-weight: 600;
+  }
+
+  .outcome-win  { background: var(--emerald-dim); color: var(--emerald); }
+  .outcome-loss { background: var(--rose-dim);    color: var(--rose); }
+
+  /* ── MATH BLOCK ── */
+  .math-block {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin-bottom: 32px;
+    text-align: center;
+    overflow-x: auto;
+  }
+
+  .math-block .katex { font-size: 1.1rem; }
+
+  .math-result {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .result-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 10px;
+  }
+
+  .chip-emerald { background: var(--emerald-dim); color: var(--emerald); border: 1px solid rgba(52,211,153,0.3); }
+  .chip-rose    { background: var(--rose-dim);    color: var(--rose);    border: 1px solid rgba(251,113,133,0.3); }
+
+  .result-desc { font-size: 0.85rem; color: var(--muted); }
+
+  /* ── TAKEAWAYS ── */
+  .takeaways {
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin-top: 8px;
+  }
+
+  .takeaways-a {
+    background: var(--emerald-dim);
+    border: 1px solid rgba(52,211,153,0.2);
+  }
+
+  .takeaways-b {
+    background: var(--rose-dim);
+    border: 1px solid rgba(251,113,133,0.2);
+  }
+
+  .takeaways h4 {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  .takeaways-a h4 { color: var(--emerald); }
+  .takeaways-b h4 { color: var(--rose); }
+
+  .takeaways ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .takeaways li {
+    display: flex;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    align-items: flex-start;
+  }
+
+  .takeaways li::before {
+    content: '→';
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .takeaways-a li::before { color: var(--emerald); }
+  .takeaways-b li::before { color: var(--rose); }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 48px 0 60px;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .footer-law {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    padding: 8px 20px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    margin-bottom: 20px;
+    color: #94a3b8;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .game-card { padding: 24px 20px; }
+    .hero { padding: 52px 0 40px; }
+    .hero-stats { gap: 24px; }
+    .prob-row { grid-template-columns: 1fr; }
+    .concepts { grid-template-columns: 1fr; }
+    .rules-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
-
 <body>
-    <div class="container">
-        
-        <div class="header">
-            <h1>My Statistically Rigged Casino Games</h1>
-            <p>The statistical concepts I used in this activity were expected value and probability distribution. Probability distribution is maps out every possible outcome of a random event (the net gain or loss for the player) and assigns a precise probability to each outcome. The tables in the document illustrate this by showing the two possible results (win/loss), the likelihood of each, and the monetary value assigned. Expected Value is  the long-run average outcome per trial if the game were played an infinite number of times. It is calculated as the sum of all possible outcomes multiplied by their respective probabilities (a weighted average). A positive EV (Game A) means the player is theoretically guaranteed to profit over time, while a negative EV (Game B) guarantees the casino a long-term profit. It is safe to assume that when repeated over multiple iterations, it will eventually lead to the expected outcome by using the Law of large numbers. The law of large numbers is an important theorem in probability that states  as the number of independent trials increases, the average result of the trials will converge to the true Expected Value. While 10 to 15 trials (as used in the simulation) are not mathematically sufficient to guarantee a perfect match, they are typically enough to demonstrate the trend—that is, the average outcome will lean toward the positive EV of Game A and the negative EV of Game B.
-Mathematically, this convergence is expressed using limits:
-As n approaches infinity the observed average must approach the calculated average
 
+<div class="container">
 
-This is used in daily life in many situations such as insurance pricing, financial planning, weather forecasting and quality control. Insurance companies use probability distribution equations to calculate the likelihood of their claims (car accidents, house fires, etc) The set their prices based on these factors so the expected value is slightly beneficial to them
- </p>
-            <p style="color: #6b7280;"></p>
-        </div>
-
-        <div class="card playerborder">
-            <h2 class="playertitle">Game A (Positive Expected Value)</h2>
-            <p style="font-size: 18px;">Outcome: Player Always Wins (Profit)</p>
-            <p>
-                This game is played with a standard 52-card deck. The player pays $1.00 to play and bets on whether the drawn card is a Prime Number Card (2, 3, 5, or 7). Face cards (J, Q, K, A) are ignored and result in a redraw. The game is designed to guarantee a positive expected value for the player.
-            </p>
-            <p>
-                The rules are summarized below:
-                <ul>
-                    <li>Cost to play: $1.00.</li>
-                    <li>Play: Draw 1 card from a shuffled 52-card deck.</li>
-                    <li>Win condition: Card is a Prime Number (2, 3, 5, 7, 16 total cards).</li>
-                    <li>Payout: Win $3.50 (net + $2.50).</li>
-                    <li>Loss condition: Card is a Composite Number (4, 6, 8, 9, 10, 20 total cards).</li>
-                    <li>Loss: Win nothing (net - $1.00).</li>
-                </ul>
-            </p>
-            <p>Probability Distribution</p>
-            <p>
-                The probability of drawing a Prime card is 16/52, or approximately 0.3077. The probability of drawing a Composite card is 36/52, or approximately 0.6923.
-            </p>
-            <table class="mathtable">
-                <thead>
-                    <tr>
-                        <th>Outcome</th>
-                        <th>Probability P(X)</th>
-                        <th>Payout ($)</th>
-                        <th>Net Gain ($)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Prime Card</td>
-                        <td>0.3077</td>
-                        <td>3.50</td>
-                        <td>+2.50</td>
-                    </tr>
-                    <tr>
-                        <td>Composite Card</td>
-                        <td>0.6923</td>
-                        <td>0.00</td>
-                        <td>-1.00</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p>Expected Value Calculation</p>
-            <p>
-                From this distribution, we calculate the expected value E:
-                E = (+2.50 * 0.3077) + (-1.00 * 0.6923). This calculates to approximately +0.7692 - 0.6923, which is +0.0769. This equals about + $0.08, meaning on average the player gains about 8 cents per play.
-            </p>
-            <p>Simulation (10 Trials)</p>
-            <table class="mathtable">
-                <thead>
-                    <tr>
-                        <th>Trial</th>
-                        <th>Outcome</th>
-                        <th>Net Gain ($)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>1</td><td>Composite</td><td>-1.00</td></tr>
-                    <tr><td>2</td><td>Prime</td><td>+2.50</td></tr>
-                    <tr><td>3</td><td>Composite</td><td>-1.00</td></tr>
-                    <tr><td>4</td><td>Composite</td><td>-1.00</td></tr>
-                    <tr><td>5</td><td>Composite</td><td>-1.00</td></tr>
-                    <tr><td>6</td><td>Prime</td><td>+2.50</td></tr>
-                    <tr><td>7</td><td>Composite</td><td>-1.00</td></tr>
-                    <tr><td>8</td><td>Composite</td><td>-1.00</td></tr>
-                    <tr><td>9</td><td>Composite</td><td>-1.00</td></tr>
-                    <tr><td>10</td><td>Composite</td><td>-1.00</td></tr>
-                </tbody>
-            </table>
-            <p>
-                In this simulation, the total net gain was +$0.50 over 10 plays, an average gain of +$0.05$ per play, which closely aligns with the theoretical positive E.
-            </p>
-            <div class="infobox playerinfo">
-                <p></p>
-            </div>
-        </div>
-        
-        <div class="card houseborder">
-            <h2 class="housetitle">Game B (Negative Expected Value)</h2>
-            <p style="font-size: 18px;">Outcome: Casino Always Wins (Profit)</p>
-            <p>
-                This game is played with a six-sided die that is secretly weighted to land on '1' 20% of the time (instead of the fair 16.67%). The remaining sides (2, 3, 4, 5, 6) each have a 16% probability. The player pays $1.00$ and bets on rolling a High Number (4, 5, 6).
-            </p>
-            <p>
-                The rules are summarized below:
-                <ul>
-                    <li>Cost to play: $1.00.</li>
-                    <li>Play: Roll the weighted 6-sided die.</li>
-                    <li>Win condition: Roll a High Number (4, 5, 6).</li>
-                    <li>Payout: Win $2.00 (net + $1.00).</li>
-                    <li>Loss condition: Roll a Low Number (1, 2, 3).</li>
-                    <li>Loss: Win nothing (net - $1.00).</li>
-                </ul>
-            </p>
-            <p>Probability Distribution</p>
-            <p>
-                The probability of rolling High is P(4) + P(5) + P(6) = 3 * 0.16 = 0.48. The probability of rolling Low is P(1) + P(2) + P(3) = 0.20 + 0.16 + 0.16 = 0.52.
-            </p>
-            <table class="mathtable">
-                <thead>
-                    <tr>
-                        <th>Outcome</th>
-                        <th>Probability P(X)</th>
-                        <th>Payout ($)</th>
-                        <th>Net Gain ($)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>High (4, 5, 6)</td>
-                        <td>0.48</td>
-                        <td>2.00</td>
-                        <td>+1.00</td>
-                    </tr>
-                    <tr>
-                        <td>Low (1, 2, 3)</td>
-                        <td>0.52</td>
-                        <td>0.00</td>
-                        <td>-1.00</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p>Expected Value Calculation</p>
-            <p>
-                From this distribution, we calculate the expected value E:
-                E = (+1.00 * 0.48) + (-1.00 * 0.52). This calculates to 0.48 - 0.52 = -0.04. This equals exactly - $0.04, meaning on average the player loses about 4 cents per play (The Casino's Profit).
-            </p>
-            <p>Simulation (10 Trials)</p>
-            <table class="mathtable">
-                <thead>
-                    <tr>
-                        <th>Trial</th>
-                        <th>Roll</th>
-                        <th>Net Gain ($)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>1</td><td>1 (Low)</td><td>-1.00</td></tr>
-                    <tr><td>2</td><td>6 (High)</td><td>+1.00</td></tr>
-                    <tr><td>3</td><td>1 (Low)</td><td>-1.00</td></tr>
-                    <tr><td>4</td><td>2 (Low)</td><td>-1.00</td></tr>
-                    <tr><td>5</td><td>5 (High)</td><td>+1.00</td></tr>
-                    <tr><td>6</td><td>3 (Low)</td><td>-1.00</td></tr>
-                    <tr><td>7</td><td>4 (High)</td><td>+1.00</td></tr>
-                    <tr><td>8</td><td>1 (Low)</td><td>-1.00</td></tr>
-                    <tr><td>9</td><td>3 (Low)</td><td>-1.00</td></tr>
-                    <tr><td>10</td><td>2 (Low)</td><td>-1.00</td></tr>
-                </tbody>
-            </table>
-            <p>
-                In this simulation, the total net gain was - $4.00$ over 10 plays, an average loss of -$0.40 per play, demonstrating the negative long-term expectation.
-            </p>
-            <div class="infobox houseinfo">
-                <p></p>
-            </div>
-        </div>
-
-        <div class="footer">
-            
-        </div>
-
+  <!-- ═══════════════ HERO ═══════════════ -->
+  <header class="hero">
+    <div class="hero-eyebrow">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Statistical Analysis · Probability Theory
     </div>
+    <h1>My Statistically<br><em>Rigged</em> Casino Games</h1>
+    <p class="hero-intro">
+      A mathematical deep-dive into how expected value and probability distribution determine long-run outcomes — and why the house always (eventually) wins.
+    </p>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-value ev-positive">+$0.08</span>
+        <span class="hero-stat-label">Game A — EV per Play</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value ev-negative">−$0.04</span>
+        <span class="hero-stat-label">Game B — EV per Play</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value ev-neutral">10</span>
+        <span class="hero-stat-label">Simulation Trials</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════ CONCEPTS ═══════════════ -->
+  <section class="concepts">
+    <div class="concept-card">
+      <div class="concept-icon" style="background:rgba(96,165,250,0.12);">🎲</div>
+      <h3>Probability Distribution</h3>
+      <p>Maps every possible outcome to a precise probability — showing the full landscape of wins, losses, and their likelihoods before a single card is drawn.</p>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon" style="background:rgba(251,191,36,0.1);">∑</div>
+      <h3>Expected Value</h3>
+      <p>The long-run weighted average per trial — calculated as $E[X] = \sum x_i \cdot P(x_i)$. Positive EV favors the player; negative EV guarantees the casino profits.</p>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon" style="background:rgba(167,139,250,0.12);">∞</div>
+      <h3>Law of Large Numbers</h3>
+      <p>As trials $n \to \infty$, the observed average converges to the true EV. Even 10–15 trials reveal the directional trend toward that theoretical limit.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════ GAME A ═══════════════ -->
+  <section class="game-card game-card-a">
+
+    <div class="section-label">
+      <div class="section-dot dot-emerald"></div>
+      <span class="section-tag tag-emerald">EV+ · Player Advantage</span>
+    </div>
+
+    <h2>Game A</h2>
+    <p class="game-subtitle">Positive Expected Value — The Player Profits Over Time</p>
+
+    <p class="game-description">
+      Played with a standard 52-card deck, this game exploits the asymmetric payout between prime and composite numbers. Face cards (J, Q, K, A) trigger a redraw, creating a clean probability space of 36 eligible cards — and an edge tilted toward the player.
+    </p>
+
+    <div class="sub-heading">Rules &amp; Structure</div>
+    <div class="rules-grid">
+      <div class="rule-item"><span class="rule-bullet bullet-emerald"></span>Cost to play: $1.00 per round</div>
+      <div class="rule-item"><span class="rule-bullet bullet-emerald"></span>Draw 1 card from shuffled 52-card deck</div>
+      <div class="rule-item"><span class="rule-bullet bullet-emerald"></span>Win: Prime card (2, 3, 5, 7 — 16 cards) → Payout $3.50 (net +$2.50)</div>
+      <div class="rule-item"><span class="rule-bullet bullet-emerald"></span>Loss: Composite card (4–10 — 20 cards) → No payout (net −$1.00)</div>
+      <div class="rule-item"><span class="rule-bullet bullet-emerald"></span>Face cards (J, Q, K, A) → Redraw</div>
+    </div>
+
+    <div class="sub-heading">Probability Distribution</div>
+    <div class="prob-row">
+      <div class="prob-pill prob-pill-emerald">
+        <div>
+          <div class="prob-label">Prime Card (Win)</div>
+          <div class="prob-value prob-value-emerald">0.3077</div>
+        </div>
+        <span class="outcome-badge outcome-win">Win</span>
+      </div>
+      <div class="prob-pill prob-pill-rose">
+        <div>
+          <div class="prob-label">Composite Card (Loss)</div>
+          <div class="prob-value prob-value-rose">0.6923</div>
+        </div>
+        <span class="outcome-badge outcome-loss">Loss</span>
+      </div>
+    </div>
+
+    <div class="sub-heading">Distribution Table</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Outcome</th>
+            <th>Probability P(X)</th>
+            <th>Payout ($)</th>
+            <th>Net Gain ($)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="outcome-badge outcome-win">Prime Card</span></td>
+            <td class="td-mono">0.3077</td>
+            <td class="td-mono">3.50</td>
+            <td class="td-gain-pos">+2.50</td>
+          </tr>
+          <tr>
+            <td><span class="outcome-badge outcome-loss">Composite Card</span></td>
+            <td class="td-mono">0.6923</td>
+            <td class="td-mono">0.00</td>
+            <td class="td-gain-neg">−1.00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sub-heading">Expected Value Calculation</div>
+    <div class="math-block">
+      $$E[X] = (+2.50)(0.3077) + (-1.00)(0.6923)$$
+      $$E[X] = 0.7693 - 0.6923$$
+      <div class="math-result">
+        <span class="result-chip chip-emerald">E[X] ≈ +$0.08</span>
+        <span class="result-desc">Player gains ~8¢ per play on average</span>
+      </div>
+    </div>
+
+    <div class="sub-heading">Simulation — 10 Trials</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Trial</th><th>Outcome</th><th>Net Gain ($)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="td-mono">1</td><td><span class="outcome-badge outcome-loss">Composite</span></td><td class="td-gain-neg">−1.00</td></tr>
+          <tr><td class="td-mono">2</td><td><span class="outcome-badge outcome-win">Prime</span></td><td class="td-gain-pos">+2.50</td></tr>
+          <tr><td class="td-mono">3</td><td><span class="outcome-badge outcome-loss">Composite</span></td><td class="td-gain-neg">−1.00</td></tr>
+          <tr><td class="td-mono">4</td><td><span class="outcome-badge outcome-loss">Composite</span></td><td class="td-gain-neg">−1.00</td></tr>
+          <tr><td class="td-mono">5</td><td><span class="outcome-badge outcome-loss">Composite</span></td><td class="td-gain-neg">−1.00</td></tr>
+          <tr><td class="td-mono">6</td><td><span class="outcome-badge outcome-win">Prime</span></td><td class="td-gain-pos">+2.50</td></tr>
+          <tr><td class="td-mono">7</td><td><span class="outcome-badge outcome-loss">Composite</span></td><td class="td-gain-neg">−1.00</td></tr>
+          <tr><td class="td-mono">8</td><td><span class="outcome-badge outcome-loss">Composite</span></td><td class="td-gain-neg">−1.00</td></tr>
+          <tr><td class="td-mono">9</td><td><span class="outcome-badge outcome-loss">Composite</span></td><td class="td-gain-neg">−1.00</td></tr>
+          <tr><td class="td-mono">10</td><td><span class="outcome-badge outcome-loss">Composite</span></td><td class="td-gain-neg">−1.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="font-size:0.88rem;color:#94a3b8;margin-bottom:24px;">
+      Simulation total: <strong style="color:var(--emerald)">+$0.50</strong> over 10 plays → average of <strong style="color:var(--emerald)">+$0.05/play</strong>, closely mirroring the theoretical EV of +$0.08.
+    </p>
+
+    <div class="takeaways takeaways-a">
+      <h4>⚡ Key Takeaways — Game A</h4>
+      <ul>
+        <li>The $3.50 payout on a ~30.8% win rate creates a positive expected value despite losing most individual rounds.</li>
+        <li>Over thousands of plays, the Law of Large Numbers guarantees the player's average converges to +$0.08.</li>
+        <li>This models how a well-priced bet or investment can be profitable even when individual losses dominate short sessions.</li>
+      </ul>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════ GAME B ═══════════════ -->
+  <section class="game-card game-card-b">
+
+    <div class="section-label">
+      <div class="section-dot dot-rose"></div>
+      <span class="section-tag tag-rose">EV− · House Advantage</span>
+    </div>
+
+    <h2>Game B</h2>
+    <p class="game-subtitle">Negative Expected Value — The Casino Profits Over Time</p>
+
+    <p class="game-description">
+      This game uses a six-sided die <em>secretly weighted</em> to land on '1' with 20% probability instead of the fair 16.67%. The remaining faces each carry a 16% probability — a subtle imbalance that shifts the house edge just enough to guarantee long-term casino profit.
+    </p>
+
+    <div class="sub-heading">Rules &amp; Structure</div>
+    <div class="rules-grid">
+      <div class="rule-item"><span class="rule-bullet bullet-rose"></span>Cost to play: $1.00 per round</div>
+      <div class="rule-item"><span class="rule-bullet bullet-rose"></span>Roll a weighted 6-sided die</div>
+      <div class="rule-item"><span class="rule-bullet bullet-rose"></span>Win: High roll (4, 5, 6) → Payout $2.00 (net +$1.00)</div>
+      <div class="rule-item"><span class="rule-bullet bullet-rose"></span>Loss: Low roll (1, 2, 3) → No payout (net −$1.00)</div>
+      <div class="rule-item"><span class="rule-bullet bullet-rose"></span>Die is weighted: P(1) = 0.20, P(2–6) = 0.16 each</div>
+    </div>
+
+    <div class="sub-heading">Probability Distribution</div>
+    <div class="prob-row">
+      <div class="prob-pill prob-pill-emerald">
+        <div>
+          <div class="prob-label">High Roll (4, 5, 6)</div>
+          <div class="prob-value prob-value-emerald">0.48</div>
+        </div>
+        <span class="outcome-badge outcome-win">Win</span>
+      </div>
+      <div class="prob-pill prob-pill-rose">
+        <div>
+          <div class="prob-label">Low Roll (1, 2, 3)</div>
+          <div class="prob-value prob-value-rose">0.52</div>
+        </div>
+        <span class="outcome-badge outcome-loss">Loss</span>
+      </div>
+    </div>
+
+    <div class="sub-heading">Distribution Table</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Outcome</th>
+            <th>Probability P(X)</th>
+            <th>Payout ($)</th>
+            <th>Net Gain ($)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="outcome-badge outcome-win">High (4, 5, 6)</span></td>
+            <td class="td-mono">0.48</td>
+            <td class="td-mono">2.00</td>
+            <td class="td-gain-pos">+1.00</td>
+          </tr>
+          <tr>
+            <td><span class="outcome-badge outcome-loss">Low (1, 2, 3)</span></td>
+            <td class="td-mono">0.52</td>
+            <td class="td-mono">0.00</td>
+            <td class="td-gain-neg">−1.00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sub-heading">Expected Value Calculation</div>
+    <div class="math-block">
+      $$E[X] = (+1.00)(0.48) + (-1.00)(0.52)$$
+      $$E[X] = 0.48 - 0.52$$
+      <div class="math-result">
+        <span class="result-chip chip-rose">E[X] = −$0.04</span>
+        <span class="result-desc">Player loses ~4¢ per play (Casino's profit)</span>
+      </div>
+    </div>
+
+    <div class="sub-heading">Simulation — 10 Trials</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Trial</th><th>Roll</th><th>Net Gain ($)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="td-mono">1</td><td><span class="outcome-badge outcome-loss">1 (Low)</span></td><td class="td-gain-neg">−1.00</td></tr>
+          <tr><td class="td-mono">2</td><td><span class="outcome-badge outcome-win">6 (High)</span></td><td class="td-gain-pos">+1.00</td></tr>
+          <tr><td class="td-mono">3</td><td><span class="outcome-badge outcome-loss">1 (Low)</span></td><td class="td-gain-neg">−1.00</td></tr>
+          <tr><td class="td-mono">4</td><td><span class="outcome-badge outcome-loss">2 (Low)</span></td><td class="td-gain-neg">−1.00</td></tr>
+          <tr><td class="td-mono">5</td><td><span class="outcome-badge outcome-win">5 (High)</span></td><td class="td-gain-pos">+1.00</td></tr>
+          <tr><td class="td-mono">6</td><td><span class="outcome-badge outcome-loss">3 (Low)</span></td><td class="td-gain-neg">−1.00</td></tr>
+          <tr><td class="td-mono">7</td><td><span class="outcome-badge outcome-win">4 (High)</span></td><td class="td-gain-pos">+1.00</td></tr>
+          <tr><td class="td-mono">8</td><td><span class="outcome-badge outcome-loss">1 (Low)</span></td><td class="td-gain-neg">−1.00</td></tr>
+          <tr><td class="td-mono">9</td><td><span class="outcome-badge outcome-loss">3 (Low)</span></td><td class="td-gain-neg">−1.00</td></tr>
+          <tr><td class="td-mono">10</td><td><span class="outcome-badge outcome-loss">2 (Low)</span></td><td class="td-gain-neg">−1.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="font-size:0.88rem;color:#94a3b8;margin-bottom:24px;">
+      Simulation total: <strong style="color:var(--rose)">−$4.00</strong> over 10 plays → average of <strong style="color:var(--rose)">−$0.40/play</strong>, already showing the negative long-term expectation emerging.
+    </p>
+
+    <div class="takeaways takeaways-b">
+      <h4>⚡ Key Takeaways — Game B</h4>
+      <ul>
+        <li>A mere 4% shift in probability (from 50/50 to 52/48) is all the house needs to guarantee long-run profit.</li>
+        <li>The weighted die demonstrates how imperceptible rigging compounds into significant loss over many trials.</li>
+        <li>Real-world analogy: insurance companies use exactly this principle — pricing premiums so $E[\text{claim}] < \text{premium}$, ensuring long-run profit.</li>
+      </ul>
+    </div>
+
+  </section>
+
+  
+
+</div>
 </body>
 </html>
