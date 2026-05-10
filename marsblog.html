@@ -1,122 +1,980 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terraforming Mars - By Shiven</title>
-    <!--css code begins here-->
-    <style>
-        body {
-            font-family: Gotham, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #1a1a1a;
-            color: #f5f5f5;
-            line-height: 1.6;
-        }
-        header {
-            background-color: #d04d2a;
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            
-        }
-        .container {
-            width: 80%;
-            margin: 20px auto;
-            padding: 20px;
-            background: #2c2c2c;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-        }
-        h2 {
-            color: #ff7043;
-            border-bottom: 2px solid #ff7043;
-            padding-bottom: 5px;
-        }
-        .image-placeholder {
-            background: #444;
-            height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #aaa;
-            font-size: 18px;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
-        p {
-            font-size: 18px;
-            text-align: justify;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terraforming Mars — Shiven</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
 
-    <!--Css code ends-->
+  <style>
+    /* ─── RESET & BASE ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --mars-red:    #ff7043;
+      --mars-deep:   #d04d2a;
+      --mars-ember:  #ff9a6c;
+      --bg-void:     #0a0a0a;
+      --bg-card:     rgba(22, 22, 22, 0.75);
+      --bg-glass:    rgba(255, 112, 67, 0.06);
+      --text-primary: #f0ece6;
+      --text-muted:  #8a8580;
+      --border:      rgba(255, 112, 67, 0.15);
+      --glow:        rgba(255, 112, 67, 0.25);
+      --nav-h:       64px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--bg-void);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      cursor: default;
+    }
+
+    /* ─── STAR-FIELD BACKGROUND ────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 30% 50%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 55% 25%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 75% 70%, rgba(255,255,255,0.2) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 20% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 65% 90%, rgba(255,255,255,0.2) 0%, transparent 100%),
+        radial-gradient(1px 1px at 45% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(2px 2px at 85% 10%, rgba(255,200,150,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 5%  95%, rgba(255,255,255,0.3) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── STICKY NAV ────────────────────────────────────────────────── */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      background: rgba(10, 10, 10, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      transition: background 0.3s;
+    }
+
+    .nav-brand {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--mars-red), var(--mars-ember));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--mars-red); }
+
+    /* ─── PROGRESS BAR ──────────────────────────────────────────────── */
+    #progress-bar {
+      position: fixed;
+      top: var(--nav-h);
+      left: 0;
+      height: 2px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--mars-deep), var(--mars-red), var(--mars-ember));
+      z-index: 1001;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 8px var(--mars-red);
+    }
+
+    /* ─── STAGE TRACKER SIDEBAR ─────────────────────────────────────── */
+    #stage-tracker {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 900;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .stage-dot {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      opacity: 0.4;
+      transition: opacity 0.3s;
+    }
+
+    .stage-dot.active { opacity: 1; }
+
+    .stage-dot:hover { opacity: 0.9; }
+
+    .stage-dot-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--mars-red);
+      opacity: 0;
+      transform: translateX(6px);
+      transition: opacity 0.2s, transform 0.2s;
+      white-space: nowrap;
+    }
+
+    .stage-dot:hover .stage-dot-label,
+    .stage-dot.active .stage-dot-label {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .stage-dot-pip {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 1px solid var(--mars-red);
+      background: transparent;
+      transition: background 0.3s, transform 0.3s;
+      flex-shrink: 0;
+    }
+
+    .stage-dot.active .stage-dot-pip {
+      background: var(--mars-red);
+      transform: scale(1.4);
+      box-shadow: 0 0 8px var(--mars-red);
+    }
+
+    /* ─── HERO ──────────────────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 0 80px 80px;
+      overflow: hidden;
+    }
+
+    #hero-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: brightness(0.55);
+      transform: scale(1.04);
+      animation: heroZoom 18s ease-out forwards;
+    }
+
+    @keyframes heroZoom {
+      from { transform: scale(1.08); }
+      to   { transform: scale(1.0); }
+    }
+
+    #hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top, rgba(10,10,10,0.98) 0%, rgba(10,10,10,0.3) 40%, transparent 70%),
+        linear-gradient(to right, rgba(10,10,10,0.6) 0%, transparent 60%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+      animation: heroFadeUp 1.2s ease-out both;
+      animation-delay: 0.3s;
+    }
+
+    @keyframes heroFadeUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--mars-red);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--mars-red);
+    }
+
+    .hero-title {
+      font-size: clamp(48px, 7vw, 96px);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, var(--mars-red) 0%, var(--mars-ember) 50%, #ffb347 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-family: 'Crimson Pro', serif;
+      font-size: 20px;
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(240,236,230,0.7);
+      max-width: 480px;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .hero-meta-dot { color: var(--mars-red); }
+
+    .scroll-cue {
+      position: absolute;
+      bottom: 32px;
+      right: 80px;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      animation: heroFadeUp 1.2s ease-out both;
+      animation-delay: 1s;
+    }
+
+    .scroll-cue span {
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      writing-mode: vertical-rl;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, var(--mars-red), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50%       { opacity: 1;   transform: scaleY(1.2); }
+    }
+
+    /* ─── MAIN CONTENT WRAPPER ──────────────────────────────────────── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 40px 120px;
+    }
+
+    /* ─── SECTION HEADERS ───────────────────────────────────────────── */
+    .section-header {
+      margin-bottom: 12px;
+    }
+
+    .stage-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--mars-red);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      opacity: 0.8;
+    }
+
+    .stage-num {
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--mars-red);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: clamp(26px, 4vw, 48px);
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      margin-bottom: 0;
+    }
+
+    .section-title em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--mars-red), var(--mars-ember));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ─── FEATURE CARDS ─────────────────────────────────────────────── */
+    .feature-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin: 64px 0;
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .feature-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* layout variants */
+    .card-full .card-img-wrap { aspect-ratio: 16/7; }
+    .card-split { display: grid; grid-template-columns: 1fr 1fr; }
+    .card-split-rev { display: grid; grid-template-columns: 1fr 1fr; }
+
+    .card-img-wrap {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card-split .card-img-wrap,
+    .card-split-rev .card-img-wrap { aspect-ratio: unset; min-height: 360px; }
+
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94),
+                  filter 0.5s ease;
+      filter: brightness(0.85) saturate(0.9);
+    }
+
+    .feature-card:hover .card-img-wrap img {
+      transform: scale(1.04);
+      filter: brightness(1) saturate(1.1);
+    }
+
+    .card-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      box-shadow: inset 0 0 40px rgba(255,112,67,0) ;
+      transition: box-shadow 0.5s;
+      pointer-events: none;
+    }
+
+    .feature-card:hover .card-img-wrap::after {
+      box-shadow: inset 0 0 60px rgba(255,112,67,0.18);
+    }
+
+    .card-body {
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .card-full .card-body { padding: 40px 48px; }
+
+    .card-body p {
+      font-family: 'Crimson Pro', serif;
+      font-size: 19px;
+      font-weight: 400;
+      line-height: 1.75;
+      color: rgba(240,236,230,0.82);
+      margin-top: 20px;
+    }
+
+    /* stat chips */
+    .stat-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .stat-chip {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mars-red);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-chip span {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    /* ─── DIVIDER ───────────────────────────────────────────────────── */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border), transparent);
+      margin: 80px 0;
+    }
+
+    /* ─── QUOTE PULL ────────────────────────────────────────────────── */
+    .pull-quote {
+      position: relative;
+      padding: 40px 56px;
+      margin: 64px 0;
+      border-left: 3px solid var(--mars-red);
+      background: var(--bg-glass);
+      border-radius: 0 12px 12px 0;
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .pull-quote.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .pull-quote::before {
+      content: '"';
+      position: absolute;
+      top: -24px;
+      left: 40px;
+      font-family: 'Crimson Pro', serif;
+      font-size: 120px;
+      color: var(--mars-red);
+      opacity: 0.2;
+      line-height: 1;
+    }
+
+    .pull-quote p {
+      font-family: 'Crimson Pro', serif;
+      font-size: 26px;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    /* ─── TIMELINE CONNECTOR ────────────────────────────────────────── */
+    .timeline-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 40px 0;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+
+    .timeline-connector::before,
+    .timeline-connector::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ─── FOOTER ────────────────────────────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 48px 40px;
+      text-align: center;
+    }
+
+    .footer-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .footer-name {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--mars-red), var(--mars-ember));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    footer a {
+      display: inline-block;
+      margin-top: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    footer a:hover { color: var(--mars-red); border-color: var(--mars-red); }
+
+    /* ─── MOBILE ────────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      #hero { padding: 0 0 60px 24px; }
+      main  { padding: 0 20px 80px; }
+      #nav  { padding: 0 20px; }
+
+      .nav-links { display: none; }
+
+      .card-split, .card-split-rev {
+        grid-template-columns: 1fr;
+      }
+
+      .card-split-rev .card-img-wrap { order: -1; }
+      .card-split .card-img-wrap,
+      .card-split-rev .card-img-wrap { min-height: 240px; }
+
+      .card-body { padding: 28px 24px; }
+      .card-full .card-body { padding: 28px 24px; }
+
+      .pull-quote { padding: 28px 24px 28px 32px; }
+      .pull-quote p { font-size: 20px; }
+
+      #stage-tracker { display: none; }
+      .scroll-cue    { right: 24px; }
+    }
+
+    /* ─── SECTION SCROLL-FADE ───────────────────────────────────────── */
+    .section-block {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .section-block.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body>
 
-<header>Terraforming Mars - By Shiven</header>
+<!-- ── STICKY NAV ──────────────────────────────────────────────────── -->
+<nav id="nav">
+  <div class="nav-brand">Shiven · Blog</div>
+  <ul class="nav-links">
+    <li><a href="#lost-world">Origins</a></li>
+    <li><a href="#thermolysis">Thermolysis</a></li>
+    <li><a href="#superstorm">Superstorm</a></li>
+    <li><a href="#nitrogen">Nitrogen</a></li>
+    <li><a href="#life">Life</a></li>
+    <li><a href="#shield">Shield</a></li>
+  </ul>
+</nav>
 
-<div class="container">
-    <h2>Mars: A lost world?</h2>
-    <p>
-        Around 4 billion years ago, Mars was not the barren wasteland we see today. In fact, it had a pleasant, oxygen-rich atmosphere and all the conditions necessary for life—though whether life ever existed there is still up for debate. So, what happened to all that? Mars no longer has a magnetic field because its core, although made of a similar composition to Earth's, has cooled and solidified. This left the red planet vulnerable to solar wind and radiation, which caused it to lose its atmosphere and become the bleak, desolate place we know today.
+<!-- ── READING PROGRESS ───────────────────────────────────────────── -->
+<div id="progress-bar"></div>
 
-
-    </p>
-
-    <img src="img/five.png" alt="Mars Surface" style="width:100%; border-radius: 8px;">
-
-
-    <h2>Unlocking Trapped Oxygen and Water</h2>
-    <p>
-        All that oxygen and water had to go somewhere, and that somewhere is now trapped in rocks and subterranean ice caps. To release these, we need to reverse the reactions that lock these gases in place through thermolysis. In other words, we need to melt Mars’s surface.
-
-Our laser would need to reach about 5500°C for thermolysis to occur and release 750 grams of oxygen per cubic meter of Martian rock. To access the water, we’d need to melt about 8 meters of the Martian surface, deepening some regions of lakes and rivers.
-    </p>
-
-    <h2>Adding A key ingrediant for life</h2>
-    <p>
-        Once we've incinerated the Martian surface with our laser, it will look frightening. Storms will rage, raining down the water that’s been vaporized during this process. This storm could last for decades, eventually forming lakes and rivers. Additionally, a strange type of snow composed mainly of iron and silicon will fall from the sky, formed from materials that vaporized during the melting. This process will also wash away many toxic gases and harmful compounds.
-    </p>
-
-    <img src="img/twoone.png" alt="Mars Surface" style="width:100%; border-radius: 8px;">
-
-    <h2>Too much oxygen?</h2>
-    <p>
-       However, our goal is still not met. The atmosphere is highly flammable because it is over 95% oxygen and lacks enough air to sustain life. To make it more akin to Earth’s atmosphere, we need nitrogen, and we know just where to get it: Titan, one of Saturn’s moons, has an atmosphere composed of 90% nitrogen.
-
-To properly harvest this, we would need to set up large automated factories to liquefy nitrogen and transport it directly to Mars using mass drivers—a machine that accelerates the payload to over 2 km/s, allowing it to reach Mars and explode on impact.
-    </p>
-
-    <h2>Adding in some life</h2>
-    <p>
-       After all this effort and nearly a century of work, we would have restored Mars to its former glory, with all the conditions necessary for life. Getting life itself on the planet, however, will take even more effort.
-
-The journey of life on Earth began with phytoplankton in the ocean, and it wouldn’t be any different for Mars. We would start by seeding the oceans with vast quantities of phytoplankton. With abundant resources, these organisms would quickly populate, filling the oceans with greenery and serving as the base of the food chain. Gradually, we could introduce other animals, like zooplankton, and eventually work our way up to fish and possibly even sharks. With relatively little effort, the oceans could become a thriving ecosystem.
-
-
-    </p>
-
-        <img src="img/three.png" alt="Mars Surface" style="width:100%; border-radius: 8px;">
-
-
-    
-    <p>
-       Achieving a stable land ecosystem, however, is much trickier, as we need plants—and plants need soil. Now, we’re left with two options: wait millennia for water and wind to naturally create soil, or repeatedly pulse our laser on and off, causing the rock to contract and expand rapidly, eventually forcing it to shatter. Add water, and we get mud. The best plants suited to the Martian environment are those native to volcanic regions here on Earth.
-
-Eventually, these plants would form the foundation for grasslands and forests. Their roots would break more rock into soil, creating a self-sustaining ecosystem. In the lesser gravity of Mars, trees could grow to new heights—previously impossible on Earth. Their roots would gather nutrients from deeper layers, forming more soil, which in turn would help create a self-sustaining ecosystem. At this point, we could begin to introduce more plants, insects, and even animals.
-    </p>
-
-    <h2>The Sun: Our Final Challenge</h2>
-    <p>
-        Finally, we must address the last problem: radiation. Mars doesn’t have a magnetic field, leaving it vulnerable to solar wind and radiation. The best solution is to create a solar umbrella to shield the planet from harmful solar wind and radiation. A large superconductive ring powered by nuclear energy could provide the necessary protection. With these steps completed, Mars would no longer be a barren wasteland—it would be a thriving, living world, ready for the next great human adventure. </p>
-   
-
-     <img src="img/four.png" alt="Mars Surface" style="width:100%; border-radius: 8px;">
-
+<!-- ── STAGE TRACKER SIDEBAR ─────────────────────────────────────── -->
+<div id="stage-tracker">
+  <div class="stage-dot" data-target="lost-world">
+    <span class="stage-dot-label">Origins</span>
+    <div class="stage-dot-pip"></div>
+  </div>
+  <div class="stage-dot" data-target="thermolysis">
+    <span class="stage-dot-label">Thermolysis</span>
+    <div class="stage-dot-pip"></div>
+  </div>
+  <div class="stage-dot" data-target="superstorm">
+    <span class="stage-dot-label">Superstorm</span>
+    <div class="stage-dot-pip"></div>
+  </div>
+  <div class="stage-dot" data-target="nitrogen">
+    <span class="stage-dot-label">Nitrogen</span>
+    <div class="stage-dot-pip"></div>
+  </div>
+  <div class="stage-dot" data-target="life">
+    <span class="stage-dot-label">Life</span>
+    <div class="stage-dot-pip"></div>
+  </div>
+  <div class="stage-dot" data-target="shield">
+    <span class="stage-dot-label">Shield</span>
+    <div class="stage-dot-pip"></div>
+  </div>
 </div>
 
+<!-- ── HERO ───────────────────────────────────────────────────────── -->
+<section id="hero">
+  <img id="hero-img" src="mars-rust-horizon-hero.webp" alt="Mars horizon at dusk" />
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Deep Space Feature</div>
+    <h1 class="hero-title">
+      Terraforming<br /><span>Mars</span>
+    </h1>
+    <p class="hero-subtitle">
+      A century-scale blueprint for returning the Red Planet to the living world it once was.
+    </p>
+    <div class="hero-meta">
+      <span>By Shiven</span>
+      <span class="hero-meta-dot">·</span>
+      <span>Science &amp; Engineering</span>
+      <span class="hero-meta-dot">·</span>
+      <span>15 min read</span>
+    </div>
+  </div>
+
+  <div class="scroll-cue">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ── MAIN ───────────────────────────────────────────────────────── -->
+<main>
+
+  <!-- ── SECTION 1: LOST WORLD ───────────────────────────────────── -->
+  <div id="lost-world" style="padding-top: 96px;">
+    <div class="section-block">
+      <div class="section-header">
+        <div class="stage-label"><div class="stage-num">01</div> Origins</div>
+        <h2 class="section-title">Mars: A <em>Lost World?</em></h2>
+      </div>
+    </div>
+
+    <article class="feature-card card-split">
+      <div class="card-img-wrap">
+        <img src="mars-magnetosphere-collapse.webp" alt="Mars magnetosphere collapse diagram" />
+      </div>
+      <div class="card-body">
+        <p>
+          Around 4 billion years ago, Mars was not the barren wasteland we see today. It had a rich atmosphere and all the conditions necessary for life — though whether life ever existed there is still up for debate.
+        </p>
+        <p>
+          Mars no longer has a magnetic field because its core has cooled and solidified. This left the planet vulnerable to solar wind, which stripped away its atmosphere and transformed it into the bleak, desolate world we know today.
+        </p>
+        <div class="stat-row">
+          <div class="stat-chip"><span>4B</span> Years ago</div>
+          <div class="stat-chip"><span>0</span> Magnetic field today</div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="timeline-connector">Stage 1 Complete · Commencing Thermolysis</div>
+
+  <!-- ── SECTION 2: THERMOLYSIS ──────────────────────────────────── -->
+  <div id="thermolysis">
+    <div class="section-block">
+      <div class="section-header">
+        <div class="stage-label"><div class="stage-num">02</div> Phase One</div>
+        <h2 class="section-title">Unlocking <em>Trapped Oxygen</em></h2>
+      </div>
+    </div>
+
+    <article class="feature-card card-split-rev">
+      <div class="card-body">
+        <p>
+          All that oxygen and water had to go somewhere — and that somewhere is now trapped in rocks and subterranean ice caps. To release them, we need to reverse the reactions that locked these gases in place through thermolysis.
+        </p>
+        <p>
+          In other words: we need to melt Mars's surface. Our laser would need to reach approximately 5,500°C for thermolysis to occur, releasing 750 grams of oxygen per cubic metre of Martian rock.
+        </p>
+        <div class="stat-row">
+          <div class="stat-chip"><span>5,500°C</span> Laser temperature</div>
+          <div class="stat-chip"><span>750g</span> O₂ per m³</div>
+          <div class="stat-chip"><span>8m</span> Surface depth</div>
+        </div>
+      </div>
+      <div class="card-img-wrap">
+        <img src="mars-laser-thermolysis-surface.webp" alt="Orbital laser melting Mars surface" />
+      </div>
+    </article>
+
+    <div class="pull-quote">
+      <p>To access the water, we'd need to melt roughly eight metres of the Martian surface — deepening entire regions of ancient lake beds back into existence.</p>
+    </div>
+  </div>
+
+  <div class="timeline-connector">Thermolysis Complete · Weather Begins</div>
+
+  <!-- ── SECTION 3: SUPERSTORM ───────────────────────────────────── -->
+  <div id="superstorm">
+    <div class="section-block">
+      <div class="section-header">
+        <div class="stage-label"><div class="stage-num">03</div> Phase Two</div>
+        <h2 class="section-title">The <em>Great Superstorm</em></h2>
+      </div>
+    </div>
+
+    <article class="feature-card card-full">
+      <div class="card-img-wrap">
+        <img src="mars-superstorm-water-rain.webp" alt="Planetary superstorm engulfing Mars" />
+      </div>
+      <div class="card-body">
+        <p>
+          Once we've incinerated the Martian surface, it will look frightening. Storms will rage, raining down vaporised water. This tempest could last for decades, eventually forming lakes and rivers.
+        </p>
+        <p>
+          A strange type of snow composed mainly of iron and silicon will fall from the sky, formed from materials that vaporised during the melting. This process will also wash away many toxic gases and harmful compounds — a violent but necessary cleanse.
+        </p>
+        <div class="stat-row">
+          <div class="stat-chip"><span>Decades</span> Storm duration</div>
+          <div class="stat-chip"><span>Fe + Si</span> Metallic snow</div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="timeline-connector">Atmosphere Forming · Nitrogen Required</div>
+
+  <!-- ── SECTION 4: NITROGEN / TITAN ────────────────────────────── -->
+  <div id="nitrogen">
+    <div class="section-block">
+      <div class="section-header">
+        <div class="stage-label"><div class="stage-num">04</div> Phase Three</div>
+        <h2 class="section-title">Nitrogen from <em>Titan</em></h2>
+      </div>
+    </div>
+
+    <article class="feature-card card-split">
+      <div class="card-img-wrap">
+        <img src="titan-mass-driver-nitrogen-launch.webp" alt="Mass driver launching nitrogen from Titan" />
+      </div>
+      <div class="card-body">
+        <p>
+          The atmosphere is over 95% oxygen — dangerously flammable and unbreathable. To make it Earth-like, we need nitrogen. And we know exactly where to get it.
+        </p>
+        <p>
+          Titan, one of Saturn's moons, has an atmosphere composed of 90% nitrogen. Automated factories would liquefy it, then launch it toward Mars via mass drivers — machines that accelerate payloads past 2 km/s, letting them detonate on impact.
+        </p>
+        <div class="stat-row">
+          <div class="stat-chip"><span>90%</span> Titan N₂ atmosphere</div>
+          <div class="stat-chip"><span>2 km/s</span> Launch velocity</div>
+        </div>
+      </div>
+    </article>
+
+    <div class="pull-quote">
+      <p>Saturn looms in Titan's sky as automated mass drivers hurl canisters of liquid nitrogen across the solar system — aimed at a planet not yet alive, but waiting to be.</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ── SECTION 5: LIFE ─────────────────────────────────────────── -->
+  <div id="life">
+    <div class="section-block">
+      <div class="section-header">
+        <div class="stage-label"><div class="stage-num">05</div> Phase Four</div>
+        <h2 class="section-title">Seeding <em>Life</em></h2>
+      </div>
+    </div>
+
+    <article class="feature-card card-full">
+      <div class="card-img-wrap">
+        <img src="mars-ocean-phytoplankton-bloom.webp" alt="Martian ocean with phytoplankton bloom" />
+      </div>
+      <div class="card-body">
+        <p>
+          After nearly a century of work, Mars would have all the conditions necessary for life. The journey of life on Earth began with phytoplankton, and it would start no differently on Mars — we seed the oceans with vast quantities of these microscopic organisms.
+        </p>
+        <p>
+          With abundant resources, they would quickly populate, forming the base of the food chain. Gradually we introduce zooplankton, then fish — and with relatively little intervention, the oceans would become a thriving ecosystem.
+        </p>
+      </div>
+    </article>
+
+    <article class="feature-card card-split-rev" style="margin-top: 32px;">
+      <div class="card-body">
+        <p>
+          Achieving a stable land ecosystem is far trickier — plants need soil. We could wait millennia for water and wind to naturally create it, or pulse our laser repeatedly, causing rock to shatter. Add water, and we get mud.
+        </p>
+        <p>
+          The best plants for the Martian environment are those native to volcanic regions on Earth. In Mars's lesser gravity, trees could grow to extraordinary heights — their roots breaking more rock into soil, creating a self-sustaining cycle.
+        </p>
+        <div class="stat-row">
+          <div class="stat-chip"><span>~100</span> Years of work</div>
+          <div class="stat-chip"><span>↑ Height</span> Lower gravity</div>
+        </div>
+      </div>
+      <div class="card-img-wrap">
+        <img src="mars-volcanic-forest-giants.webp" alt="Giant trees in Martian volcanic forest" />
+      </div>
+    </article>
+  </div>
+
+  <div class="timeline-connector">Biosphere Established · Final Challenge</div>
+
+  <!-- ── SECTION 6: SHIELD ───────────────────────────────────────── -->
+  <div id="shield">
+    <div class="section-block">
+      <div class="section-header">
+        <div class="stage-label"><div class="stage-num">06</div> Final Phase</div>
+        <h2 class="section-title">The Solar <em>Shield</em></h2>
+      </div>
+    </div>
+
+    <article class="feature-card card-split">
+      <div class="card-img-wrap">
+        <img src="mars-solar-shield-lagrange-point.webp" alt="Superconductive ring shielding Mars at Lagrange point" />
+      </div>
+      <div class="card-body">
+        <p>
+          Mars still lacks a magnetic field, leaving it vulnerable to solar wind and radiation. The solution: a superconductive ring stationed between Mars and the Sun, powered by nuclear energy, generating an artificial magnetosphere.
+        </p>
+        <p>
+          With these steps completed, Mars would no longer be a barren wasteland. It would be a thriving, living world — humanity's second home, ready for the next great adventure.
+        </p>
+        <div class="stat-row">
+          <div class="stat-chip"><span>L1</span> Lagrange point</div>
+          <div class="stat-chip"><span>Nuclear</span> Power source</div>
+          <div class="stat-chip"><span>∞</span> Future ahead</div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-title">Written &amp; designed by</div>
+  <div class="footer-name">Shiven</div>
+  <br />
+  <a href="https://shivenbits.github.io/shivenbits.blogs.html" target="_blank">← More from Shiven's Blogs</a>
+</footer>
+
+<!-- ── SCRIPTS ────────────────────────────────────────────────────── -->
+<script>
+  // Progress bar
+  const progressBar = document.getElementById('progress-bar');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+  });
+
+  // Intersection Observer — cards + sections
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.feature-card, .pull-quote, .section-block').forEach(el => {
+    observer.observe(el);
+  });
+
+  // Stage tracker active state
+  const sections = ['lost-world','thermolysis','superstorm','nitrogen','life','shield'];
+  const dots = document.querySelectorAll('.stage-dot');
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        dots.forEach(d => {
+          d.classList.toggle('active', d.dataset.target === id);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) sectionObserver.observe(el);
+  });
+
+  // Dot click navigation
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      const target = document.getElementById(dot.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
 </body>
 </html>
