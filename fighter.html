@@ -3,111 +3,398 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fighter Jet Physics & Prototype Blog</title>
+  <title>Fighter Jet Prototyping – Shiven Ghatate</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0b1120;
+      --bg-surface:  #0f172a;
+      --card-bg:     rgba(255,255,255,0.04);
+      --card-border: rgba(255,255,255,0.09);
+      --text:        #e2e8f0;
+      --text-muted:  #94a3b8;
+      --grad:        linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+      --grad-subtle: linear-gradient(135deg, rgba(99,102,241,.15) 0%, rgba(168,85,247,.15) 100%);
+      --accent:      #818cf8;
+      --radius:      14px;
+      --nav-h:       64px;
+    }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #1b1f22;
-      color: #e0e0e0;
-      line-height: 1.6;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      line-height: 1.7;
+      min-height: 100vh;
     }
 
-    header {
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-      padding: 2rem;
-      text-align: center;
-      border-bottom: 4px solid #555;
+    /* ── BACKGROUND MESH ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 0%, rgba(99,102,241,.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(168,85,247,.14) 0%, transparent 55%);
+      pointer-events: none;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-      color: #f5c542;
-      letter-spacing: 1px;
-    }
-
+    /* ── NAV ── */
     nav {
-      background: #2c2f33;
-      padding: 0.5rem;
-      text-align: center;
+      position: sticky; top: 0; z-index: 100;
+      height: var(--nav-h);
+      background: rgba(11,17,32,.75);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--card-border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(1rem, 5vw, 3rem);
     }
 
-    nav a {
-      color: #f5c542;
-      margin: 0 1rem;
+    .nav-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       text-decoration: none;
-      font-weight: bold;
+      letter-spacing: -.3px;
     }
 
-    main {
-      padding: 2rem;
-      max-width: 1000px;
-      margin: auto;
+    .nav-links { display: flex; gap: 0.25rem; align-items: center; }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: .875rem;
+      font-weight: 500;
+      padding: .4rem .85rem;
+      border-radius: 8px;
+      transition: color .2s, background .2s;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,.06); }
+    .nav-links a.active {
+      color: #c4b5fd;
+      background: rgba(99,102,241,.15);
     }
 
-    section {
-      margin-bottom: 3rem;
-      border-left: 4px solid #f5c542;
-      padding-left: 1rem;
-    }
-
-    h2 {
-      color: #f5c542;
-      margin-top: 0;
-    }
-
-    .image-placeholder {
-      background-color: #333;
-      height: 250px;
-      margin: 1rem 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #999;
-      font-style: italic;
-    }
-
-    footer {
-      background-color: #111;
-      color: #777;
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 1;
       text-align: center;
-      padding: 1rem;
-      font-size: 0.9rem;
+      padding: clamp(3rem, 8vw, 6rem) 1.5rem clamp(2rem, 5vw, 4rem);
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .45rem;
+      background: rgba(99,102,241,.15);
+      border: 1px solid rgba(99,102,241,.35);
+      border-radius: 999px;
+      padding: .35rem 1rem;
+      font-size: .78rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 1.4rem;
+    }
+
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -.5px;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: .9rem;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: clamp(.95rem, 2.5vw, 1.1rem);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ── SECTION NAV PILLS ── */
+    .section-nav {
+      position: relative; z-index: 1;
+      display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap;
+      padding: 0 1.5rem 3rem;
+    }
+
+    .section-nav a {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .55rem 1.3rem;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: .875rem;
+      font-weight: 500;
+      backdrop-filter: blur(8px);
+      transition: all .2s;
+    }
+    .section-nav a:hover {
+      border-color: rgba(99,102,241,.5);
+      color: #c4b5fd;
+      background: rgba(99,102,241,.1);
+      transform: translateY(-1px);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 clamp(1rem, 4vw, 2rem) 5rem;
+      display: flex; flex-direction: column; gap: 2.5rem;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 32px rgba(0,0,0,.35);
+      transition: box-shadow .3s, transform .3s;
+    }
+    .card:hover {
+      box-shadow: 0 8px 48px rgba(99,102,241,.15);
+      transform: translateY(-2px);
+    }
+
+    .card-accent {
+      height: 3px;
+      background: var(--grad);
+    }
+
+    .card-body { padding: clamp(1.5rem, 4vw, 2.25rem); }
+
+    .card-label {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .card h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.25rem, 3vw, 1.65rem);
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 1.25rem;
+      line-height: 1.25;
+    }
+
+    /* ── IMAGE ── */
+    .card-image {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      max-width: 100%;
+      display: block;
+      margin-bottom: 1.5rem;
+      object-fit: cover;
+    }
+
+    /* ── TEXT ── */
+    .card p {
+      color: var(--text-muted);
+      font-size: .965rem;
+      line-height: 1.8;
+    }
+
+    /* ── CTA BUTTON ── */
+    .btn-cta {
+      display: inline-flex; align-items: center; gap: .55rem;
+      margin-bottom: 1.5rem;
+      padding: .65rem 1.5rem;
+      border-radius: 10px;
+      background: var(--grad);
+      color: #fff;
+      font-weight: 600;
+      font-size: .9rem;
+      text-decoration: none;
+      letter-spacing: .01em;
+      box-shadow: 0 4px 20px rgba(99,102,241,.35);
+      transition: opacity .2s, transform .2s, box-shadow .2s;
+    }
+    .btn-cta:hover {
+      opacity: .9;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(99,102,241,.5);
+    }
+    .btn-cta svg { flex-shrink: 0; }
+
+    /* ── INSIGHT CHIPS ── */
+    .chips {
+      display: flex; flex-wrap: wrap; gap: .5rem;
+      margin-top: 1.5rem;
+    }
+    .chip {
+      background: rgba(99,102,241,.12);
+      border: 1px solid rgba(99,102,241,.25);
+      color: #a5b4fc;
+      border-radius: 8px;
+      padding: .3rem .75rem;
+      font-size: .78rem;
+      font-weight: 500;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: .82rem;
+      border-top: 1px solid var(--card-border);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* ── RESPONSIVE NAV COLLAPSE ── */
+    @media (max-width: 600px) {
+      .nav-links a { padding: .4rem .55rem; font-size: .8rem; }
     }
   </style>
 </head>
-
 <body>
 
-  <header>
-    <h1>Fighter Jet Prototyping</h1>
-  </header>
-
+  <!-- ── NAV ── -->
   <nav>
-    <a href="#analysis">My analysis of FA-18</a>
-    <a href="#prototype">3D Prototype & Enhancements</a>
+    <a href="https://shivenbits.github.io/Shivenbits/index.html" class="nav-brand">Shivenbits</a>
+    <div class="nav-links">
+      <a href="https://shivenbits.github.io/Shivenbits/index.html">Home</a>
+      <a href="https://shivenbits.github.io/Shivenbits/aboutme.html">About</a>
+      <a href="https://shivenbits.github.io/Shivenbits/blogs.html" class="active">STEM Blogs</a>
+      <a href="https://shivenbits.github.io/Shivenbits/awards.html">Awards</a>
+    </div>
   </nav>
 
+  <!-- ── HERO ── -->
+  <div class="hero">
+    <div class="hero-badge">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      STEM Blog · Aerospace
+    </div>
+    <h1>Fighter Jet Prototyping</h1>
+    <p>Analysing the FA-18 Hornet, spotting design flaws, and building an enhanced 3D prototype in Blender.</p>
+  </div>
+
+  <!-- ── SECTION NAV PILLS ── -->
+  <div class="section-nav">
+    <a href="#analysis">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      My Analysis of FA-18
+    </a>
+    <a href="#prototype">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      3D Prototype & Enhancements
+    </a>
+  </div>
+
+  <!-- ── MAIN ── -->
   <main>
 
+    <!-- SECTION 1 -->
+    <article class="card" id="analysis">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          Section 01 — Analysis
+        </div>
+        <h2>✈️ My Analysis of the FA-18</h2>
 
-    <section id="analysis">
-      <h2>✈️ My analysis of FA-18</h2>
-      <img src="jet1.png" alt="FA 18" width="900">
-      <p> <b> Link to prototype - https://www.tinkercad.com/things/apgNbukKme2-copy-of-copy-of-fighter-jet-fa-18a/edit </b><br>
-While checking out the fighter jet model, I noticed a bunch of things that didn’t seem quite right. First off, there’s no landing gear or doors, so I’m not really sure how it would land or keep anything inside safe. The engines are super close together, which could mess up the airflow and maybe even affect how well it flies. Also, there’s no wing fold system, which is important for jets that land on aircraft carriers where space is tight. The bottom of the jet is really flat, and that could cause a lot of drag and reduce how smoothly it flies through the air. The tailhook is placed way too far forward, which makes it kind of useless if the jet needs to stop quickly on a carrier. Another big issue is that the fuel and weapons are just out in the open, so they could easily get hit by debris or other stuff during takeoff. The jet also has a pretty wide body, which might increase drag and make it easier to spot on radar. Lastly, the tail fins are angled kind of weirdly, which could throw off stability unless they were designed that way for a specific reason. Overall, the design looks cool, but it would need some serious fixes to actually work in real life.
-</p>
-    </section>
+        <img src="jet1.png" alt="FA-18 Hornet model" class="card-image">
 
-    <section id="prototype">
-      <h2>🛠️ My Enhanced Fighter Jet Prototype</h2>
-            <img src="jet2.png" alt="FA 18" width="900">
+        <a
+          href="https://www.tinkercad.com/things/apgNbukKme2-copy-of-copy-of-fighter-jet-fa-18a/edit"
+          target="_blank"
+          rel="noopener"
+          class="btn-cta"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View Prototype on Tinkercad
+        </a>
 
-       <p>This is my updated fighter jet prototype made in Blender with the help of some online templates. I feel it has some improvements from the above version. In the earlier model, the design was bulkier, the body was too rounded, and the aerodynamics didn’t make much sense. For this version, I made the shape more streamlined and flat to reduce drag and improve airflow under the fuselage, especially during high-speed flight. I also adjusted the canopy to have a sharper, more realistic angle like real stealth jets, which helps with both visibility and reducing radar reflection. The tail and fin shapes were redesigned to look more like modern jets; this one has a more blended and sharper vertical stabilizer, which would give it better stability in yaw. I also tightened up the body and made the wings thinner and more aligned, which helps with lift without adding extra drag. While I haven’t added landing gear or internal compartments yet, I’ve started thinking more about where things like engine placement and weapon bays should realistically go. Using Blender has not only helped me learn 3D design, but it's also made me think more about the physics of flight; like how airflow, drag, thrust, and lift actually work together in a jet. I'm proud of how far the model has come, and I'm excited to keep improving it.</p>
-    </section>
+        <p>
+          While checking out the fighter jet model, I noticed a bunch of things that didn't seem quite right. First off, there's no landing gear or doors, so I'm not really sure how it would land or keep anything inside safe. The engines are super close together, which could mess up the airflow and maybe even affect how well it flies. Also, there's no wing fold system, which is important for jets that land on aircraft carriers where space is tight.
+        </p>
+        <p style="margin-top:1rem;">
+          The bottom of the jet is really flat, and that could cause a lot of drag and reduce how smoothly it flies through the air. The tailhook is placed way too far forward, which makes it kind of useless if the jet needs to stop quickly on a carrier. Another big issue is that the fuel and weapons are just out in the open, so they could easily get hit by debris or other stuff during takeoff. The jet also has a pretty wide body, which might increase drag and make it easier to spot on radar. Lastly, the tail fins are angled kind of weirdly, which could throw off stability unless they were designed that way for a specific reason. Overall, the design looks cool, but it would need some serious fixes to actually work in real life.
+        </p>
+
+        <div class="chips">
+          <span class="chip">No Landing Gear</span>
+          <span class="chip">Engine Spacing Issue</span>
+          <span class="chip">No Wing Fold</span>
+          <span class="chip">Flat Fuselage = High Drag</span>
+          <span class="chip">Misplaced Tailhook</span>
+          <span class="chip">Exposed Fuel & Weapons</span>
+          <span class="chip">Wide Body / Radar Visibility</span>
+          <span class="chip">Odd Fin Angles</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- SECTION 2 -->
+    <article class="card" id="prototype">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          Section 02 — Enhanced Prototype
+        </div>
+        <h2>🛠️ My Enhanced Fighter Jet Prototype</h2>
+
+        <img src="jet2.png" alt="Enhanced fighter jet prototype in Blender" class="card-image">
+
+        <p>
+          This is my updated fighter jet prototype made in Blender with the help of some online templates. I feel it has some meaningful improvements from the above version. In the earlier model, the design was bulkier, the body was too rounded, and the aerodynamics didn't make much sense. For this version, I made the shape more streamlined and flat to reduce drag and improve airflow under the fuselage, especially during high-speed flight.
+        </p>
+        <p style="margin-top:1rem;">
+          I also adjusted the canopy to have a sharper, more realistic angle like real stealth jets, which helps with both visibility and reducing radar reflection. The tail and fin shapes were redesigned to look more like modern jets — this one has a more blended and sharper vertical stabilizer, which would give it better stability in yaw. I also tightened up the body and made the wings thinner and more aligned, which helps with lift without adding extra drag.
+        </p>
+        <p style="margin-top:1rem;">
+          While I haven't added landing gear or internal compartments yet, I've started thinking more about where things like engine placement and weapon bays should realistically go. Using Blender has not only helped me learn 3D design, but it's also made me think more about the physics of flight — like how airflow, drag, thrust, and lift actually work together in a jet. I'm proud of how far the model has come, and I'm excited to keep improving it.
+        </p>
+
+        <div class="chips">
+          <span class="chip">Blender 3D</span>
+          <span class="chip">Streamlined Fuselage</span>
+          <span class="chip">Stealth Canopy Angle</span>
+          <span class="chip">Redesigned Stabilizers</span>
+          <span class="chip">Reduced Drag</span>
+          <span class="chip">Improved Lift</span>
+        </div>
+      </div>
+    </article>
+
   </main>
 
+  <!-- ── FOOTER ── -->
+  <footer>
+    <p>Part of <a href="https://shivenbits.github.io/Shivenbits/blogs.html">Shivenbits STEM Blogs</a> · Built by Shiven Ghatate</p>
+  </footer>
 
 </body>
 </html>
