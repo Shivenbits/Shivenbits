@@ -1,122 +1,374 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terraforming Mars - By Shiven</title>
-    <!--css code begins here-->
-    <style>
-        body {
-            font-family: Gotham, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #1a1a1a;
-            color: #f5f5f5;
-            line-height: 1.6;
-        }
-        header {
-            background-color: #d04d2a;
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            
-        }
-        .container {
-            width: 80%;
-            margin: 20px auto;
-            padding: 20px;
-            background: #2c2c2c;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-        }
-        h2 {
-            color: #ff7043;
-            border-bottom: 2px solid #ff7043;
-            padding-bottom: 5px;
-        }
-        .image-placeholder {
-            background: #444;
-            height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #aaa;
-            font-size: 18px;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
-        p {
-            font-size: 18px;
-            text-align: justify;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MARS TERRAFORMING ARCHIVE — SHIVEN</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;600;800&family=Barlow:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --obsidian: #0a0a0b;
+  --surface: #111114;
+  --panel: #16161a;
+  --rust: #e24e2c;
+  --amber: #ff8c00;
+  --dim: #404040;
+  --grid: #1c1c22;
+  --text: #c8c8d0;
+  --mono: 'Share Tech Mono', monospace;
+  --display: 'Barlow Condensed', sans-serif;
+  --body: 'Barlow', sans-serif;
+}
 
-    <!--Css code ends-->
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--obsidian);
+  color: var(--text);
+  font-family: var(--body);
+  font-weight: 300;
+  line-height: 1.75;
+  overflow-x: hidden;
+  background-image:
+    linear-gradient(rgba(226,78,44,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(226,78,44,.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+
+#progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, var(--rust), var(--amber));
+  width: 0%; z-index: 1000;
+  box-shadow: 0 0 8px var(--rust);
+  transition: width .1s linear;
+}
+
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  padding: 60px 24px;
+  border-bottom: 1px solid var(--dim);
+}
+
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 110%, rgba(226,78,44,.22) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 50% 100%, rgba(255,140,0,.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: .7rem;
+  letter-spacing: .25em;
+  color: var(--rust);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  opacity: 0; animation: fadeUp .6s .2s forwards;
+}
+
+.hero h1 {
+  font-family: var(--display);
+  font-size: clamp(3.5rem, 10vw, 9rem);
+  font-weight: 800;
+  line-height: .92;
+  letter-spacing: -.01em;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0; animation: fadeUp .7s .35s forwards;
+}
+
+.hero h1 span { color: var(--rust); }
+
+.hero-sub {
+  font-family: var(--mono);
+  font-size: .75rem;
+  letter-spacing: .2em;
+  color: var(--dim);
+  margin-top: 24px;
+  opacity: 0; animation: fadeUp .6s .5s forwards;
+}
+
+.hud-corner {
+  position: absolute; width: 28px; height: 28px;
+  border-color: var(--rust); border-style: solid; opacity: .5;
+}
+.hud-corner.tl { top: 24px; left: 24px; border-width: 2px 0 0 2px; }
+.hud-corner.tr { top: 24px; right: 24px; border-width: 2px 2px 0 0; }
+.hud-corner.bl { bottom: 24px; left: 24px; border-width: 0 0 2px 2px; }
+.hud-corner.br { bottom: 24px; right: 24px; border-width: 0 2px 2px 0; }
+
+.scan-line {
+  position: absolute; left: 0; width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--rust), transparent);
+  opacity: .15;
+  animation: scan 6s ease-in-out infinite;
+}
+
+@keyframes scan { 0%,100% { top: 0%; opacity:.08 } 50% { top: 100%; opacity:.2 } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(18px) } to { opacity:1; transform:none } }
+
+/* ── LAYOUT ── */
+.mission-log {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 60px 24px 100px;
+}
+
+/* ── PHASE HEADER ── */
+.phase-header {
+  display: flex; align-items: center; gap: 16px;
+  margin: 64px 0 20px;
+}
+
+.phase-tag {
+  font-family: var(--mono);
+  font-size: .65rem;
+  letter-spacing: .18em;
+  color: var(--rust);
+  background: rgba(226,78,44,.1);
+  border: 1px solid rgba(226,78,44,.3);
+  padding: 4px 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.phase-line { flex: 1; height: 1px; background: var(--dim); opacity: .4; }
+
+.phase-header h2 {
+  font-family: var(--display);
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #f0f0f0;
+  line-height: 1.1;
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* ── DATA MODULE (paragraph wrapper) ── */
+.data-module {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid #222228;
+  border-left: 2px solid var(--rust);
+  padding: 28px 28px 28px 32px;
+  margin-bottom: 20px;
+}
+
+.data-module::before {
+  content: attr(data-label);
+  position: absolute; top: -1px; left: -2px;
+  font-family: var(--mono);
+  font-size: .58rem;
+  letter-spacing: .14em;
+  color: var(--obsidian);
+  background: var(--rust);
+  padding: 2px 8px;
+  text-transform: uppercase;
+}
+
+.data-module p {
+  font-size: 1rem;
+  line-height: 1.85;
+  color: #b0b0bc;
+}
+
+/* ── IMAGE BLOCK ── */
+.img-block {
+  position: relative;
+  margin: 32px 0;
+  overflow: hidden;
+  border: 1px solid #222228;
+  cursor: zoom-in;
+  transition: border-color .3s;
+}
+
+.img-block:hover { border-color: var(--rust); }
+
+.img-block img {
+  width: 100%;
+  display: block;
+  filter: saturate(.85) contrast(1.05);
+  transition: transform .5s ease, filter .4s;
+}
+
+.img-block:hover img {
+  transform: scale(1.025);
+  filter: saturate(1.1) contrast(1.08);
+}
+
+.img-caption {
+  background: rgba(10,10,11,.85);
+  backdrop-filter: blur(6px);
+  padding: 10px 16px;
+  font-family: var(--mono);
+  font-size: .65rem;
+  letter-spacing: .14em;
+  color: var(--dim);
+  text-transform: uppercase;
+  border-top: 1px solid #222228;
+}
+
+.img-caption span { color: var(--amber); margin-right: 8px; }
+
+/* ── HUD TICKER at bottom ── */
+.hud-ticker {
+  border-top: 1px solid var(--dim);
+  background: var(--surface);
+  padding: 12px 24px;
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .16em;
+  color: #333;
+  text-transform: uppercase;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ticker-inner {
+  display: inline-block;
+  animation: ticker 30s linear infinite;
+}
+
+@keyframes ticker {
+  from { transform: translateX(0) }
+  to   { transform: translateX(-50%) }
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--obsidian); }
+::-webkit-scrollbar-thumb { background: var(--rust); border-radius: 2px; }
+</style>
 </head>
 <body>
 
-<header>Terraforming Mars - By Shiven</header>
-
-<div class="container">
-    <h2>Mars: A lost world?</h2>
-    <p>
-        Around 4 billion years ago, Mars was not the barren wasteland we see today. In fact, it had a pleasant, oxygen-rich atmosphere and all the conditions necessary for life—though whether life ever existed there is still up for debate. So, what happened to all that? Mars no longer has a magnetic field because its core, although made of a similar composition to Earth's, has cooled and solidified. This left the red planet vulnerable to solar wind and radiation, which caused it to lose its atmosphere and become the bleak, desolate place we know today.
+<div id="progress-bar"></div>
 
 
-    </p>
+<main class="mission-log">
 
-    <img src="img/five.png" alt="Mars Surface" style="width:100%; border-radius: 8px;">
+  <!-- PHASE 00 -->
+  <div class="phase-header">
+    <span class="phase-tag">PHASE 00</span>
+    <div class="phase-line"></div>
+    <h2>Mars — A Lost World?</h2>
+  </div>
+
+  <div class="data-module" data-label="Background Intel">
+    <p>Around 4 billion years ago, Mars was not the barren wasteland we see today. In fact, it harboured a thicker atmosphere and all the conditions necessary for life — though whether life ever arose there remains debated. What changed? Mars no longer has a magnetic field because its core, composed similarly to Earth's, has cooled and solidified. This left the red planet exposed to solar wind and radiation, which stripped away its atmosphere and transformed it into the desolate world we know today.</p>
+  </div>
+
+  
+  <div class="img-block">
+    <img src="img/five.png" alt="Ancient vs Modern Mars surface comparison">
+    <div class="img-caption"><span>IMG-01</span> Ancient Mars vs. Present-Day Mars — Surface Comparative</div>
+  </div>
+
+  <!-- PHASE 01 -->
+  <div class="phase-header">
+    <span class="phase-tag">PHASE 01</span>
+    <div class="phase-line"></div>
+    <h2>Thermolysis — Unlocking Trapped Oxygen &amp; Water</h2>
+  </div>
+
+  <div class="data-module" data-label="Extraction Protocol">
+    <p>All that oxygen and water had to go somewhere — and that somewhere is now locked inside rocks and subterranean ice caps. To release these resources, we need to reverse the reactions that sealed them away through thermolysis. In other words: we must melt the Martian surface. The required laser must sustain roughly 5,500 °C to trigger thermolysis, liberating approximately 750 grams of oxygen per cubic metre of Martian rock. Accessing the water beneath means melting nearly 8 metres of surface material, restoring the beds of ancient lakes and rivers.</p>
+  </div>
+
+  <!-- PHASE 02 -->
+  <div class="phase-header">
+    <span class="phase-tag">PHASE 02</span>
+    <div class="phase-line"></div>
+    <h2>The Great Storm — Adding Water to the World</h2>
+  </div>
+
+  <div class="data-module" data-label="Atmospheric Event Log">
+    <p>Once the Martian surface has been incinerated by our laser array, the planet will enter a violent transitional phase. Raging storms will sweep the globe, raining down the vaporised water released during thermolysis. This tempest could endure for decades before finally relenting, leaving behind nascent lakes and rivers. Alongside water, a strange iron-silicon snow will fall — particles vaporised during the melting that condense into glittering metallic flakes. This violent cleansing process will simultaneously wash away many of the toxic compounds and harmful gases that blanket the surface today.</p>
+  </div>
+
+ 
+  <div class="img-block">
+    <img src="img/twoone.png" alt="Mars Great Storm atmospheric event">
+    <div class="img-caption"><span>IMG-02</span> Genesis Storm — Vaporisation & Precipitation Cycle, Year 12</div>
+  </div>
+
+  
+  <div class="phase-header">
+    <span class="phase-tag">PHASE 03</span>
+    <div class="phase-line"></div>
+    <h2>Nitrogen Import — Balancing the Atmosphere</h2>
+  </div>
+
+  <div class="data-module" data-label="Atmospheric Composition">
+    <p>The storm resolves, but a new problem surfaces: the resulting atmosphere is over 95% oxygen — violently flammable and unable to sustain complex life. Earth's breathable air requires nitrogen as its primary buffer, and we know exactly where to source it. Titan, one of Saturn's moons, maintains an atmosphere composed of roughly 90% nitrogen. Vast automated factories would be deployed on Titan to liquefy this nitrogen and launch it toward Mars via mass drivers — electromagnetic accelerators that propel payloads beyond 2 km/s, enabling direct delivery to the Martian surface on impact.</p>
+  </div>
+
+  
+  <div class="phase-header">
+    <span class="phase-tag">PHASE 04</span>
+    <div class="phase-line"></div>
+    <h2>Seeding Life — Ocean &amp; Land Ecosystems</h2>
+  </div>
+
+  <div class="data-module" data-label="Biogenesis Log">
+    <p>After nearly a century of effort, Mars would mirror its ancient self — all the conditions for life, restored. But life itself must still be seeded deliberately. As it did on Earth, the journey begins in the oceans. Vast quantities of phytoplankton would be introduced, rapidly proliferating in the nutrient-rich waters and laying the foundation for a marine food chain. Gradually, zooplankton, fish, and eventually apex predators would follow, yielding a thriving aquatic biosphere with minimal additional intervention.</p>
+  </div>
+
+  
+  <div class="img-block">
+    <img src="img/three.png" alt="Mars ocean phytoplankton seeding">
+    <div class="img-caption"><span>IMG-03</span> First Light — Phytoplankton Seeding, Mare Boreum Basin</div>
+  </div>
+
+  <div class="data-module" data-label="Terrestrial Expansion">
+    <p>Land ecosystems present a far more complex challenge. Plants require soil — and Mars has only pulverised volcanic rock. Two paths present themselves: wait millennia for water and wind to naturally produce soil, or apply rapid thermal cycling via the laser to shatter surface rock into granular substrate. Add water, and we get mud — then mud that can sustain life. Pioneer species from Earth's volcanic regions would be the first colonisers, gradually breaking rock into richer soil with their roots. In the lower Martian gravity, trees would grow to extraordinary heights never possible on Earth, while their deep roots would accelerate soil production and help the ecosystem become entirely self-sustaining. Insects, mammals, and eventually megafauna could follow.</p>
+  </div>
+
+  
+  <div class="phase-header">
+    <span class="phase-tag">PHASE 05</span>
+    <div class="phase-line"></div>
+    <h2>The Solar Umbrella — Final Shielding</h2>
+  </div>
+
+  <div class="data-module" data-label="Radiation Mitigation">
+    <p>One last obstacle stands between Mars and a living world: the absence of a planetary magnetic field. Without it, solar wind and radiation continuously strip the atmosphere and threaten surface life. The proposed solution is an artificial solar umbrella — a massive superconductive ring positioned at Mars's L1 Lagrange point, powered by nuclear reactors, generating a magnetic dipole field large enough to deflect solar wind away from the entire planet. With this final system in place, Mars would no longer be a wasteland. It would be the next chapter of life in the solar system.</p>
+  </div>
+
+  
+  <div class="img-block">
+    <img src="img/four.png" alt="Mars solar umbrella magnetic shield">
+    <div class="img-caption"><span>IMG-04</span> Project Aegis — L1 Magnetic Shield Array, Operational Render</div>
+  </div>
+
+</main>
 
 
-    <h2>Unlocking Trapped Oxygen and Water</h2>
-    <p>
-        All that oxygen and water had to go somewhere, and that somewhere is now trapped in rocks and subterranean ice caps. To release these, we need to reverse the reactions that lock these gases in place through thermolysis. In other words, we need to melt Mars’s surface.
-
-Our laser would need to reach about 5500°C for thermolysis to occur and release 750 grams of oxygen per cubic meter of Martian rock. To access the water, we’d need to melt about 8 meters of the Martian surface, deepening some regions of lakes and rivers.
-    </p>
-
-    <h2>Adding A key ingrediant for life</h2>
-    <p>
-        Once we've incinerated the Martian surface with our laser, it will look frightening. Storms will rage, raining down the water that’s been vaporized during this process. This storm could last for decades, eventually forming lakes and rivers. Additionally, a strange type of snow composed mainly of iron and silicon will fall from the sky, formed from materials that vaporized during the melting. This process will also wash away many toxic gases and harmful compounds.
-    </p>
-
-    <img src="img/twoone.png" alt="Mars Surface" style="width:100%; border-radius: 8px;">
-
-    <h2>Too much oxygen?</h2>
-    <p>
-       However, our goal is still not met. The atmosphere is highly flammable because it is over 95% oxygen and lacks enough air to sustain life. To make it more akin to Earth’s atmosphere, we need nitrogen, and we know just where to get it: Titan, one of Saturn’s moons, has an atmosphere composed of 90% nitrogen.
-
-To properly harvest this, we would need to set up large automated factories to liquefy nitrogen and transport it directly to Mars using mass drivers—a machine that accelerates the payload to over 2 km/s, allowing it to reach Mars and explode on impact.
-    </p>
-
-    <h2>Adding in some life</h2>
-    <p>
-       After all this effort and nearly a century of work, we would have restored Mars to its former glory, with all the conditions necessary for life. Getting life itself on the planet, however, will take even more effort.
-
-The journey of life on Earth began with phytoplankton in the ocean, and it wouldn’t be any different for Mars. We would start by seeding the oceans with vast quantities of phytoplankton. With abundant resources, these organisms would quickly populate, filling the oceans with greenery and serving as the base of the food chain. Gradually, we could introduce other animals, like zooplankton, and eventually work our way up to fish and possibly even sharks. With relatively little effort, the oceans could become a thriving ecosystem.
-
-
-    </p>
-
-        <img src="img/three.png" alt="Mars Surface" style="width:100%; border-radius: 8px;">
-
-
-    
-    <p>
-       Achieving a stable land ecosystem, however, is much trickier, as we need plants—and plants need soil. Now, we’re left with two options: wait millennia for water and wind to naturally create soil, or repeatedly pulse our laser on and off, causing the rock to contract and expand rapidly, eventually forcing it to shatter. Add water, and we get mud. The best plants suited to the Martian environment are those native to volcanic regions here on Earth.
-
-Eventually, these plants would form the foundation for grasslands and forests. Their roots would break more rock into soil, creating a self-sustaining ecosystem. In the lesser gravity of Mars, trees could grow to new heights—previously impossible on Earth. Their roots would gather nutrients from deeper layers, forming more soil, which in turn would help create a self-sustaining ecosystem. At this point, we could begin to introduce more plants, insects, and even animals.
-    </p>
-
-    <h2>The Sun: Our Final Challenge</h2>
-    <p>
-        Finally, we must address the last problem: radiation. Mars doesn’t have a magnetic field, leaving it vulnerable to solar wind and radiation. The best solution is to create a solar umbrella to shield the planet from harmful solar wind and radiation. A large superconductive ring powered by nuclear energy could provide the necessary protection. With these steps completed, Mars would no longer be a barren wasteland—it would be a thriving, living world, ready for the next great human adventure. </p>
-   
-
-     <img src="img/four.png" alt="Mars Surface" style="width:100%; border-radius: 8px;">
-
+<div class="hud-ticker">
+  <span class="ticker-inner">
+    MISSION STATUS: ACTIVE &nbsp;——&nbsp; ATMOSPHERIC O₂: 95.2% → TARGET 21% &nbsp;——&nbsp; SURFACE TEMP: −63°C → TARGET +14°C &nbsp;——&nbsp; MAGNETIC FIELD: OFFLINE &nbsp;——&nbsp; PHASE 05 INITIATED &nbsp;——&nbsp; TITAN NITROGEN EXTRACTION: NOMINAL &nbsp;——&nbsp; PHYTOPLANKTON BLOOM: EXPANDING &nbsp;——&nbsp; MISSION STATUS: ACTIVE &nbsp;——&nbsp; ATMOSPHERIC O₂: 95.2% → TARGET 21% &nbsp;——&nbsp; SURFACE TEMP: −63°C → TARGET +14°C &nbsp;——&nbsp; MAGNETIC FIELD: OFFLINE &nbsp;——&nbsp; PHASE 05 INITIATED &nbsp;——&nbsp; TITAN NITROGEN EXTRACTION: NOMINAL &nbsp;——&nbsp; PHYTOPLANKTON BLOOM: EXPANDING &nbsp;——&nbsp;
+  </span>
 </div>
 
+<script>
+  const bar = document.getElementById('progress-bar');
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    bar.style.width = pct + '%';
+  });
+</script>
 </body>
 </html>
