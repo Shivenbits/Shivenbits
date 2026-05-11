@@ -69,7 +69,37 @@ strong{color:var(--txt)}
 </style>
 </head>
 <body>
+<div id="sb-nav-root"></div>
+<script>
+(function() {
+    const config = {
+        "jhu.html":      { name: "JHU MATH",    bg: "#6fdc8c", txt: "#0a0f1e" },
+        "marsblog.html": { name: "MARS ARCHIVE",bg: "#e24e2c", txt: "#ffffff" },
+        "ai.html":       { name: "AI GAME JAM", bg: "#a8ff3e", txt: "#0b0c0e" },
+        "stockss.html":  { name: "MARKET BLOG", bg: "#4f8ef7", txt: "#ffffff" },
+        "stats.html":    { name: "STATISTICS",  bg: "#f43f5e", txt: "#ffffff" },
+        "prime.html":    { name: "PRIME PROOF", bg: "#a78bfa", txt: "#ffffff" },
+        "math1.html":    { name: "MATH WONDERS",bg: "#f97316", txt: "#ffffff" },
+        "hl.html":       { name: "HIGHER LOWER",bg: "#38bdf8", txt: "#ffffff" },
+        "default":       { name: "BLOG",        bg: "#1e293b", txt: "#ffffff" }
+    };
 
+    const filename = window.location.pathname.split('/').pop().toLowerCase() || "default";
+    const theme = config[filename] || config.default;
+
+    document.getElementById('sb-nav-root').innerHTML = `
+        <nav style="width:100%; background:${theme.bg}; color:${theme.txt}; padding:10px 20px; display:flex; justify-content:space-between; align-items:center; font-family:sans-serif; position:sticky; top:0; z-index:10000; box-shadow:0 2px 10px rgba(0,0,0,0.2); box-sizing:border-box;">
+            <div style="font-weight:900; letter-spacing:1px; font-size:0.9rem;">SHIVENBITS / ${theme.name}</div>
+            <div style="display:flex; gap:15px; font-size:0.85rem; font-weight:600;">
+                <a href="index.html" style="color:inherit; text-decoration:none; opacity:0.8;">HOME</a>
+                <a href="blogs.html" style="color:inherit; text-decoration:none; border-bottom:2px solid;">BLOGS</a>
+                <a href="awards.html" style="color:inherit; text-decoration:none; opacity:0.8;">AWARDS</a>
+                <a href="aboutme.html" style="color:inherit; text-decoration:none; opacity:0.8;">ABOUT</a>
+            </div>
+        </nav>
+    `;
+})();
+</script>
 <section class="hero"><div class="wrap">
   <h1>3 AIs<br><em>Make a Game.</em></h1>
   <p class="date">March 14, 2026</p>
