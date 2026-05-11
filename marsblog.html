@@ -37,7 +37,7 @@ body {
   background-size: 48px 48px;
 }
 
-
+/* ── PROGRESS BAR ── */
 #progress-bar {
   position: fixed; top: 0; left: 0; height: 2px;
   background: linear-gradient(90deg, var(--rust), var(--amber));
@@ -46,7 +46,7 @@ body {
   transition: width .1s linear;
 }
 
-
+/* ── HERO ── */
 .hero {
   position: relative;
   min-height: 100vh;
@@ -257,7 +257,20 @@ body {
 
 <div id="progress-bar"></div>
 
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="hud-corner tl"></div>
+  <div class="hud-corner tr"></div>
+  <div class="hud-corner bl"></div>
+  <div class="hud-corner br"></div>
+  <div class="scan-line"></div>
 
+  <p class="hero-eyebrow">Interplanetary Archive — Mission File 2047 — By Shiven</p>
+  <h1>Terraform<br><span>Mars</span></h1>
+  <p class="hero-sub">STATUS: ACTIVE &nbsp;|&nbsp; PLANET: MARS &nbsp;|&nbsp; CLEARANCE: OPEN</p>
+</section>
+
+<!-- ═══════════ CONTENT ═══════════ -->
 <main class="mission-log">
 
   <!-- PHASE 00 -->
@@ -271,7 +284,12 @@ body {
     <p>Around 4 billion years ago, Mars was not the barren wasteland we see today. In fact, it harboured a thicker atmosphere and all the conditions necessary for life — though whether life ever arose there remains debated. What changed? Mars no longer has a magnetic field because its core, composed similarly to Earth's, has cooled and solidified. This left the red planet exposed to solar wind and radiation, which stripped away its atmosphere and transformed it into the desolate world we know today.</p>
   </div>
 
-  
+  <!--
+    IMAGE 01 — mars-surface-ancient.png
+    Description: A cinematic, hyper-realistic split image of ancient Mars on the left (blue skies,
+    flowing rivers, green algae mats) contrasted against modern Mars on the right (rust-red dust,
+    barren craters, thin hazy atmosphere) — dramatic wide-angle planetary surface shot at golden hour.
+  -->
   <div class="img-block">
     <img src="img/five.png" alt="Ancient vs Modern Mars surface comparison">
     <div class="img-caption"><span>IMG-01</span> Ancient Mars vs. Present-Day Mars — Surface Comparative</div>
@@ -299,13 +317,18 @@ body {
     <p>Once the Martian surface has been incinerated by our laser array, the planet will enter a violent transitional phase. Raging storms will sweep the globe, raining down the vaporised water released during thermolysis. This tempest could endure for decades before finally relenting, leaving behind nascent lakes and rivers. Alongside water, a strange iron-silicon snow will fall — particles vaporised during the melting that condense into glittering metallic flakes. This violent cleansing process will simultaneously wash away many of the toxic compounds and harmful gases that blanket the surface today.</p>
   </div>
 
- 
+  <!--
+    IMAGE 02 — mars-storm-genesis.png
+    Description: A sweeping, hyper-realistic orbital view of Mars partially shrouded in a colossal
+    reddish-brown storm system, with lightning arcing across deep ravines and nascent water glinting
+    in newly-formed basins below — dramatic chiaroscuro lighting from a distant sun.
+  -->
   <div class="img-block">
     <img src="img/twoone.png" alt="Mars Great Storm atmospheric event">
     <div class="img-caption"><span>IMG-02</span> Genesis Storm — Vaporisation & Precipitation Cycle, Year 12</div>
   </div>
 
-  
+  <!-- PHASE 03 -->
   <div class="phase-header">
     <span class="phase-tag">PHASE 03</span>
     <div class="phase-line"></div>
@@ -316,7 +339,7 @@ body {
     <p>The storm resolves, but a new problem surfaces: the resulting atmosphere is over 95% oxygen — violently flammable and unable to sustain complex life. Earth's breathable air requires nitrogen as its primary buffer, and we know exactly where to source it. Titan, one of Saturn's moons, maintains an atmosphere composed of roughly 90% nitrogen. Vast automated factories would be deployed on Titan to liquefy this nitrogen and launch it toward Mars via mass drivers — electromagnetic accelerators that propel payloads beyond 2 km/s, enabling direct delivery to the Martian surface on impact.</p>
   </div>
 
-  
+  <!-- PHASE 04 -->
   <div class="phase-header">
     <span class="phase-tag">PHASE 04</span>
     <div class="phase-line"></div>
@@ -327,7 +350,12 @@ body {
     <p>After nearly a century of effort, Mars would mirror its ancient self — all the conditions for life, restored. But life itself must still be seeded deliberately. As it did on Earth, the journey begins in the oceans. Vast quantities of phytoplankton would be introduced, rapidly proliferating in the nutrient-rich waters and laying the foundation for a marine food chain. Gradually, zooplankton, fish, and eventually apex predators would follow, yielding a thriving aquatic biosphere with minimal additional intervention.</p>
   </div>
 
-  
+  <!--
+    IMAGE 03 — mars-ocean-seeding.png
+    Description: A cinematic underwater shot of a glowing, bioluminescent phytoplankton bloom
+    spreading through clear rust-tinted Martian ocean water, with the hazy Martian sky and twin
+    moons visible through the shimmering surface above — ethereal, high-contrast colour palette.
+  -->
   <div class="img-block">
     <img src="img/three.png" alt="Mars ocean phytoplankton seeding">
     <div class="img-caption"><span>IMG-03</span> First Light — Phytoplankton Seeding, Mare Boreum Basin</div>
@@ -337,7 +365,7 @@ body {
     <p>Land ecosystems present a far more complex challenge. Plants require soil — and Mars has only pulverised volcanic rock. Two paths present themselves: wait millennia for water and wind to naturally produce soil, or apply rapid thermal cycling via the laser to shatter surface rock into granular substrate. Add water, and we get mud — then mud that can sustain life. Pioneer species from Earth's volcanic regions would be the first colonisers, gradually breaking rock into richer soil with their roots. In the lower Martian gravity, trees would grow to extraordinary heights never possible on Earth, while their deep roots would accelerate soil production and help the ecosystem become entirely self-sustaining. Insects, mammals, and eventually megafauna could follow.</p>
   </div>
 
-  
+  <!-- PHASE 05 -->
   <div class="phase-header">
     <span class="phase-tag">PHASE 05</span>
     <div class="phase-line"></div>
@@ -348,7 +376,12 @@ body {
     <p>One last obstacle stands between Mars and a living world: the absence of a planetary magnetic field. Without it, solar wind and radiation continuously strip the atmosphere and threaten surface life. The proposed solution is an artificial solar umbrella — a massive superconductive ring positioned at Mars's L1 Lagrange point, powered by nuclear reactors, generating a magnetic dipole field large enough to deflect solar wind away from the entire planet. With this final system in place, Mars would no longer be a wasteland. It would be the next chapter of life in the solar system.</p>
   </div>
 
-  
+  <!--
+    IMAGE 04 — mars-solar-umbrella.png
+    Description: A blueprint-style technical illustration of a colossal ring-shaped superconductive
+    structure floating in space between Mars and the Sun, with glowing magnetic field lines arcing
+    around the planet below and a clean, cold-white vector-art aesthetic on a deep black background.
+  -->
   <div class="img-block">
     <img src="img/four.png" alt="Mars solar umbrella magnetic shield">
     <div class="img-caption"><span>IMG-04</span> Project Aegis — L1 Magnetic Shield Array, Operational Render</div>
@@ -356,7 +389,7 @@ body {
 
 </main>
 
-
+<!-- ═══════════ TICKER ═══════════ -->
 <div class="hud-ticker">
   <span class="ticker-inner">
     MISSION STATUS: ACTIVE &nbsp;——&nbsp; ATMOSPHERIC O₂: 95.2% → TARGET 21% &nbsp;——&nbsp; SURFACE TEMP: −63°C → TARGET +14°C &nbsp;——&nbsp; MAGNETIC FIELD: OFFLINE &nbsp;——&nbsp; PHASE 05 INITIATED &nbsp;——&nbsp; TITAN NITROGEN EXTRACTION: NOMINAL &nbsp;——&nbsp; PHYTOPLANKTON BLOOM: EXPANDING &nbsp;——&nbsp; MISSION STATUS: ACTIVE &nbsp;——&nbsp; ATMOSPHERIC O₂: 95.2% → TARGET 21% &nbsp;——&nbsp; SURFACE TEMP: −63°C → TARGET +14°C &nbsp;——&nbsp; MAGNETIC FIELD: OFFLINE &nbsp;——&nbsp; PHASE 05 INITIATED &nbsp;——&nbsp; TITAN NITROGEN EXTRACTION: NOMINAL &nbsp;——&nbsp; PHYTOPLANKTON BLOOM: EXPANDING &nbsp;——&nbsp;
