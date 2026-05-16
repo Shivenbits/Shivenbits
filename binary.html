@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Search // DIVIDE & CONQUER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --cyan: #00FFEE;
+    --cyan-dim: #00CCBB;
+    --cyan-faint: rgba(0,255,238,0.06);
+    --cyan-glow: rgba(0,255,238,0.15);
+    --bg: #0A0C0F;
+    --bg2: #0F1215;
+    --bg3: #141820;
+    --line: rgba(0,255,238,0.12);
+    --line-bright: rgba(0,255,238,0.3);
+    --text: #C8D4DC;
+    --text-dim: #5A6870;
+    --text-bright: #E8F4F8;
+    --red-accent: #FF3B3B;
+    --amber: #FFB800;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* DIAGONAL SPLIT LINE */
+  .split-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .split-overlay::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    width: 1px;
+    height: 140%;
+    background: linear-gradient(180deg, transparent, var(--cyan) 20%, var(--cyan) 80%, transparent);
+    opacity: 0.08;
+    transform: rotate(-8deg);
+    transform-origin: center top;
+  }
+  .split-overlay::after {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: 52%;
+    width: 1px;
+    height: 140%;
+    background: linear-gradient(180deg, transparent, var(--line-bright) 30%, var(--line-bright) 70%, transparent);
+    opacity: 0.04;
+    transform: rotate(-8deg);
+    transform-origin: center top;
+  }
+
+  main { position: relative; z-index: 1; }
+
+  /* HEADER */
+  .site-header {
+    border-bottom: 1px solid var(--line-bright);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    background: rgba(10,12,15,0.95);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    color: var(--cyan);
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .logo:hover { opacity: 0.75; }
+  .logo span { color: var(--text-dim); }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+  .nav-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    text-transform: uppercase;
+    padding: 0 1.1rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    border-left: 1px solid var(--line);
+    position: relative;
+    transition: color 0.2s, background 0.2s;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--cyan);
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+  }
+  .nav-links a:hover { color: var(--text-bright); background: var(--cyan-faint); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-links a.active { color: var(--cyan); }
+  .nav-links a.active::after { transform: scaleX(1); }
+  @media (max-width: 600px) {
+    .nav-links a { padding: 0 0.65rem; font-size: 0.65rem; }
+    .logo { font-size: 0.9rem; }
+  }
+
+  /* LAYOUT */
+  .content-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 2rem 6rem;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 3rem;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .content-wrap { grid-template-columns: 1fr; }
+    .sidebar { order: -1; }
+  }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 4rem;
+    position: relative;
+  }
+  .section-number {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    letter-spacing: 0.04em;
+    color: var(--text-bright);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 60px;
+    height: 1px;
+    background: var(--cyan);
+  }
+  .section-body {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--text);
+  }
+  .section-body strong {
+    color: var(--text-bright);
+    font-weight: 500;
+  }
+  .highlight-num {
+    color: var(--cyan);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1em;
+  }
+
+  /* EFFICIENCY WIDGET */
+  .widget {
+    background: var(--bg3);
+    border: 1px solid var(--line-bright);
+    border-top: 2px solid var(--cyan);
+    padding: 2rem;
+    margin-bottom: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .widget::before {
+    content: 'EFFICIENCY_CALC.exe';
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+  .widget-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 1.5rem;
+  }
+  .widget-input-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .widget-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+  #list-size {
+    background: var(--bg);
+    border: 1px solid var(--line-bright);
+    color: var(--text-bright);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    width: 180px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #list-size:focus { border-color: var(--cyan); }
+  .calc-btn {
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.55rem 1.5rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .calc-btn:hover { background: var(--cyan-glow); }
+  .calc-btn:active { transform: scale(0.97); }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: 0;
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .result-divider {
+    background: var(--line-bright);
+  }
+  .result-panel {
+    padding: 1.25rem 1.5rem;
+    position: relative;
+  }
+  .result-panel.linear { background: rgba(255,59,59,0.04); }
+  .result-panel.binary { background: rgba(0,255,238,0.04); }
+  .result-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .result-panel.linear .result-label { color: var(--red-accent); }
+  .result-panel.binary .result-label { color: var(--cyan); }
+  .result-num {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 2.4rem;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+  .result-panel.linear .result-num { color: var(--red-accent); }
+  .result-panel.binary .result-num { color: var(--cyan); }
+  .result-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+  .speedup-bar {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+  .speedup-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.6rem;
+  }
+  .bar-track {
+    height: 6px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .bar-fill-linear {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: var(--red-accent);
+    opacity: 0.5;
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+  }
+  .bar-fill-binary {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: var(--cyan);
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1) 0.1s;
+    width: 0%;
+  }
+  .speedup-factor {
+    margin-top: 0.5rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--amber);
+    letter-spacing: 0.05em;
+  }
+
+  /* HALF-LIFE VISUALIZER */
+  .halving-visual {
+    margin: 2rem 0;
+    position: relative;
+  }
+  .halving-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.4rem;
+    gap: 0.5rem;
+  }
+  .halving-bar-wrap {
+    flex: 1;
+    height: 24px;
+    position: relative;
+  }
+  .halving-bar {
+    height: 100%;
+    background: var(--cyan-faint);
+    border: 1px solid var(--line);
+    position: relative;
+    transition: width 0.4s ease;
+  }
+  .halving-bar.active {
+    border-color: var(--cyan);
+    background: rgba(0,255,238,0.1);
+  }
+  .halving-bar.discarded {
+    opacity: 0.2;
+    background: rgba(255,59,59,0.05);
+    border-color: rgba(255,59,59,0.2);
+  }
+  .halving-bar-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    min-width: 90px;
+    letter-spacing: 0.05em;
+  }
+  .halving-bar-pct {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--cyan);
+    min-width: 36px;
+    text-align: right;
+  }
+
+  /* LOGIC STEPS */
+  .logic-steps { margin: 1.5rem 0; }
+  .logic-step {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--line);
+    border-left: 2px solid transparent;
+    margin-bottom: 0.5rem;
+    cursor: default;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    position: relative;
+  }
+  .logic-step:hover {
+    border-left-color: var(--cyan);
+    background: var(--cyan-faint);
+    transform: translateX(4px);
+  }
+  .step-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--cyan);
+    min-width: 24px;
+    padding-top: 0.1rem;
+    font-weight: 700;
+  }
+  .step-content { flex: 1; }
+  .step-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+    color: var(--text-bright);
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+  }
+  .step-desc {
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .step-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+  }
+  .tag-cyan { border: 1px solid var(--cyan); color: var(--cyan); }
+  .tag-red { border: 1px solid var(--red-accent); color: var(--red-accent); }
+  .tag-amber { border: 1px solid var(--amber); color: var(--amber); }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: #0D1117;
+    border: 1px solid var(--line);
+    border-top: none;
+    position: relative;
+    margin: 1rem 0 2rem;
+  }
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: var(--bg3);
+    border: 1px solid var(--line);
+    border-bottom: 1px solid var(--line-bright);
+  }
+  .code-lang {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--cyan);
+    text-transform: uppercase;
+  }
+  .code-filename {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+  .copy-btn {
+    background: transparent;
+    border: 1px solid var(--line-bright);
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.7rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .copy-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: var(--cyan-faint);
+  }
+  .copy-btn.copied {
+    border-color: #00FF88;
+    color: #00FF88;
+  }
+  pre {
+    padding: 1.5rem 1.25rem;
+    overflow-x: auto;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.75;
+    tab-size: 4;
+  }
+  /* Syntax colors */
+  .kw { color: #C792EA; }
+  .fn { color: #82AAFF; }
+  .str { color: #C3E88D; }
+  .num { color: #F78C6C; }
+  .cm { color: #546E7A; font-style: italic; }
+  .op { color: #89DDFF; }
+  .pn { color: #EEFFFF; }
+  .var { color: #EEFFFF; }
+  .param { color: #FFCB6B; }
+
+  /* SIDEBAR */
+  .sidebar { position: sticky; top: 72px; }
+
+  .sidebar-card {
+    background: var(--bg3);
+    border: 1px solid var(--line);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .sidebar-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.35rem 0;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: color 0.15s, transform 0.15s;
+    border: none;
+    background: none;
+    text-align: left;
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+  }
+  .toc-item:hover { color: var(--text-bright); transform: translateX(3px); }
+  .toc-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--cyan);
+    min-width: 18px;
+  }
+
+  .complexity-table { width: 100%; border-collapse: collapse; }
+  .complexity-table td {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.78rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .complexity-table td:first-child { color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; }
+  .complexity-table td:last-child { color: var(--text-bright); font-family: 'Share Tech Mono', monospace; text-align: right; }
+  .complexity-table tr:last-child td { border-bottom: none; }
+  .good { color: var(--cyan) !important; }
+  .bad { color: var(--red-accent) !important; }
+  .mid { color: var(--amber) !important; }
+
+  .prereq-list { list-style: none; }
+  .prereq-list li {
+    font-size: 0.82rem;
+    padding: 0.3rem 0;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .prereq-list li::before {
+    content: '▸';
+    color: var(--cyan);
+    font-size: 0.65rem;
+  }
+
+  /* DIVIDER */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0;
+    opacity: 0.4;
+  }
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line-bright);
+  }
+  .divider-icon {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--cyan);
+    letter-spacing: 0.15em;
+  }
+
+  /* SECTION 4 HEADER — no number */
+  .section-title-alt {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    letter-spacing: 0.04em;
+    color: var(--text-bright);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .section-title-alt::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 60px;
+    height: 1px;
+    background: var(--amber);
+  }
+
+  /* HALVING VISUALIZER (interactive) */
+  .half-viz-wrap {
+    background: var(--bg3);
+    border: 1px solid var(--line);
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .half-viz-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .half-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.35rem;
+  }
+  .half-row-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    min-width: 52px;
+    text-align: right;
+  }
+  .half-row-bar-wrap {
+    flex: 1;
+    height: 18px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .half-row-fill {
+    height: 100%;
+    background: var(--cyan);
+    opacity: 0.18;
+    transition: width 0.5s ease;
+  }
+  .half-row-fill.search { opacity: 0.55; background: var(--cyan); }
+  .half-row-pct {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    min-width: 40px;
+  }
+
+  /* Footer */
+  .page-footer {
+    border-top: 1px solid var(--line);
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--line-bright); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--cyan-dim); }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeInUp 0.6s ease both; }
+  .fade-in-2 { animation: fadeInUp 0.6s ease 0.1s both; }
+  .fade-in-3 { animation: fadeInUp 0.6s ease 0.2s both; }
+</style>
+</head>
+<body>
+
+<div class="split-overlay"></div>
+
+<header class="site-header">
+  <a href="index.html" class="logo">Shiven<span></span>Bits</a>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="aboutme.html">About Me</a>
+    <a href="blogs.html" class="active">Blogs</a>
+    <a href="awards.html">Awards</a>
+  </nav>
+</header>
+
+<main>
+  <div class="content-wrap fade-in">
+    <!-- MAIN CONTENT -->
+    <div class="main-col">
+
+      <h1 style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:clamp(2.2rem,5vw,3.8rem);line-height:1;letter-spacing:-0.01em;color:var(--text-bright);text-transform:uppercase;margin-bottom:2.5rem;">BINARY <span style="color:var(--cyan)">SEARCH</span></h1>
+
+      <!-- CALCULATOR WIDGET -->
+      <div class="widget" id="calc-widget">
+        <div class="widget-title">⟩ Binary Search Efficiency Calculator</div>
+        <div class="widget-input-row">
+          <span class="widget-label">LIST SIZE (n) →</span>
+          <input type="number" id="list-size" value="1000000" min="1" max="999999999999" placeholder="Enter list size…" />
+          <button class="calc-btn" onclick="calculate()">CALCULATE</button>
+        </div>
+        <div class="results-grid">
+          <div class="result-panel linear">
+            <div class="result-label">⬛ Linear Search</div>
+            <div class="result-num" id="linear-result">1,000,000</div>
+            <div class="result-sub" id="linear-sub">max comparisons</div>
+          </div>
+          <div class="result-divider"></div>
+          <div class="result-panel binary">
+            <div class="result-label">⬛ Binary Search</div>
+            <div class="result-num" id="binary-result">20</div>
+            <div class="result-sub" id="binary-sub">⌈log₂(n)⌉ comparisons</div>
+          </div>
+        </div>
+        <div class="speedup-bar">
+          <div class="speedup-label">RELATIVE COST — linear (red) vs binary (cyan)</div>
+          <div class="bar-track" style="margin-bottom:0.4rem;">
+            <div class="bar-fill-linear" id="bar-linear" style="width:100%"></div>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill-binary" id="bar-binary" style="width:2%"></div>
+          </div>
+          <div class="speedup-factor" id="speedup-factor">Binary is 50,000× fewer comparisons</div>
+        </div>
+      </div>
+
+      <!-- SECTION 1 -->
+      <section class="section" id="s1">
+        <div class="section-number">SECTION 01 // EFFICIENCY ANALYSIS</div>
+        <h2 class="section-title">Why Binary Search Beats Linear Search</h2>
+        <div class="section-body">
+          <p>In a <strong>Linear Search</strong>, you check every single element one by one. If your item is at the end of a list of <span class="highlight-num">1 million</span> items, you're making <span class="highlight-num">1 million</span> comparisons.</p>
+          <br>
+          <p><strong>Binary Search</strong>, however, divides the problem into smaller sections. By constantly dividing the list in half, it reaches the target much faster. For a list of <span class="highlight-num">1 million</span> items, Binary Search finds the target in under <span class="highlight-num">20</span> comparisons.</p>
+        </div>
+
+        <!-- Half-life visualizer -->
+        <div class="half-viz-wrap" style="margin-top:1.75rem;">
+          <div class="half-viz-label">HALVING VISUALISATION — search space reduction per step</div>
+          <div id="halving-bars"></div>
+        </div>
+      </section>
+
+      <div class="section-divider"><span class="divider-icon">// DIVIDE //</span></div>
+
+      <!-- SECTION 2 -->
+      <section class="section" id="s2">
+        <div class="section-number">SECTION 02 // ALGORITHM LOGIC</div>
+        <h2 class="section-title">Understanding the Algorithm</h2>
+        <div class="section-body">
+          <p>Binary Search only works on <strong>sorted arrays</strong>. The logic follows these steps:</p>
+        </div>
+        <div class="logic-steps" style="margin-top:1.25rem;">
+          <div class="logic-step">
+            <div class="step-num">01</div>
+            <div class="step-content">
+              <div class="step-title">Find the Middle</div>
+              <div class="step-desc">Look at the element in the center of the current range.</div>
+            </div>
+            <span class="step-tag tag-cyan">INIT</span>
+          </div>
+          <div class="logic-step">
+            <div class="step-num">02</div>
+            <div class="step-content">
+              <div class="step-title">The Match</div>
+              <div class="step-desc">If the target is the middle, then it's completed.</div>
+            </div>
+            <span class="step-tag tag-cyan">SUCCESS</span>
+          </div>
+          <div class="logic-step">
+            <div class="step-num">03a</div>
+            <div class="step-content">
+              <div class="step-title">Target Smaller — Go Left</div>
+              <div class="step-desc">If the target is <strong>smaller</strong> than the middle, throw away the right half and repeat the search on the left.</div>
+            </div>
+            <span class="step-tag tag-amber">HALVE</span>
+          </div>
+          <div class="logic-step">
+            <div class="step-num">03b</div>
+            <div class="step-content">
+              <div class="step-title">Target Larger — Go Right</div>
+              <div class="step-desc">If the target is <strong>larger</strong>, throw away the left half and repeat on the right.</div>
+            </div>
+            <span class="step-tag tag-amber">HALVE</span>
+          </div>
+          <div class="logic-step">
+            <div class="step-num">04</div>
+            <div class="step-content">
+              <div class="step-title">Repeat</div>
+              <div class="step-desc">Keep halving the search area until the target is found or the range becomes empty.</div>
+            </div>
+            <span class="step-tag tag-red">LOOP</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"><span class="divider-icon">// IMPLEMENT //</span></div>
+
+      <!-- SECTION 3 -->
+      <section class="section" id="s3">
+        <div class="section-number">SECTION 03 // RECURSIVE APPROACH</div>
+        <h2 class="section-title">Implementing Binary Search Using Recursion</h2>
+        <div class="section-body">
+          <p>Recursion is an easy way to understand binary search as the problem breaks down into smaller versions of itself. It does this by calling itself in the function itself.</p>
+        </div>
+
+        <div style="margin-top:1.5rem;">
+          <div class="code-header">
+            <div style="display:flex;align-items:center;gap:1rem;">
+              <span class="code-lang">Python</span>
+              <span class="code-filename">binary_search_recursive.py</span>
+            </div>
+            <button class="copy-btn" onclick="copyCode(this,'code1')">COPY</button>
+          </div>
+          <div class="code-block">
+            <pre id="code1"><span class="kw">def</span> <span class="fn">binary_search_recursive</span>(<span class="param">arr</span>, <span class="param">low</span>, <span class="param">high</span>, <span class="param">target</span>)<span class="pn">:</span>
+    <span class="cm"># Base case: the range is exhausted</span>
+    <span class="kw">if</span> <span class="var">high</span> <span class="op">&gt;=</span> <span class="var">low</span><span class="pn">:</span>
+        <span class="var">mid</span> <span class="op">=</span> <span class="pn">(</span><span class="var">high</span> <span class="op">+</span> <span class="var">low</span><span class="pn">)</span> <span class="op">//</span> <span class="num">2</span>
+        <span class="cm"># If element is present at the middle</span>
+        <span class="kw">if</span> <span class="var">arr</span><span class="pn">[</span><span class="var">mid</span><span class="pn">]</span> <span class="op">==</span> <span class="var">target</span><span class="pn">:</span>
+            <span class="kw">return</span> <span class="var">mid</span>
+        <span class="cm"># If element is smaller than mid, search the left subarray</span>
+        <span class="kw">elif</span> <span class="var">arr</span><span class="pn">[</span><span class="var">mid</span><span class="pn">]</span> <span class="op">&gt;</span> <span class="var">target</span><span class="pn">:</span>
+            <span class="kw">return</span> <span class="fn">binary_search_recursive</span><span class="pn">(</span><span class="var">arr</span><span class="pn">,</span> <span class="var">low</span><span class="pn">,</span> <span class="var">mid</span> <span class="op">-</span> <span class="num">1</span><span class="pn">,</span> <span class="var">target</span><span class="pn">)</span>
+        <span class="cm"># Else search the right subarray</span>
+        <span class="kw">else</span><span class="pn">:</span>
+            <span class="kw">return</span> <span class="fn">binary_search_recursive</span><span class="pn">(</span><span class="var">arr</span><span class="pn">,</span> <span class="var">mid</span> <span class="op">+</span> <span class="num">1</span><span class="pn">,</span> <span class="var">high</span><span class="pn">,</span> <span class="var">target</span><span class="pn">)</span>
+    <span class="kw">else</span><span class="pn">:</span>
+        <span class="cm"># Element is not present in array</span>
+        <span class="kw">return</span> <span class="op">-</span><span class="num">1</span></pre>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"><span class="divider-icon">// ITERATE //</span></div>
+
+      <!-- SECTION 4 -->
+      <section class="section" id="s4">
+        <div class="section-number">SECTION 04 // ITERATIVE APPROACH</div>
+        <h2 class="section-title-alt">Iterative Binary Search</h2>
+        <div class="section-body">
+          <p>Another way to do a binary sort is an iterative function, instead of calling it itself, the iterative function does it manually by using a while loop until the number is found.</p>
+        </div>
+
+        <div style="margin-top:1.5rem;">
+          <div class="code-header">
+            <div style="display:flex;align-items:center;gap:1rem;">
+              <span class="code-lang">Python</span>
+              <span class="code-filename">binary_search_iterative.py</span>
+            </div>
+            <button class="copy-btn" onclick="copyCode(this,'code2')">COPY</button>
+          </div>
+          <div class="code-block">
+            <pre id="code2"><span class="kw">def</span> <span class="fn">find_index</span>(<span class="param">data</span><span class="pn">,</span> <span class="param">target</span>)<span class="pn">:</span>
+    <span class="str">"""
+    An efficient iterative binary search function.
+    Returns the index of target if found, else -1.
+    """</span>
+    <span class="var">left</span> <span class="op">=</span> <span class="num">0</span>
+    <span class="var">right</span> <span class="op">=</span> <span class="fn">len</span><span class="pn">(</span><span class="var">data</span><span class="pn">)</span> <span class="op">-</span> <span class="num">1</span>
+    <span class="kw">while</span> <span class="var">left</span> <span class="op">&lt;=</span> <span class="var">right</span><span class="pn">:</span>
+        <span class="cm"># Calculate mid (using this formula prevents overflow in some languages)</span>
+        <span class="var">mid</span> <span class="op">=</span> <span class="var">left</span> <span class="op">+</span> <span class="pn">(</span><span class="var">right</span> <span class="op">-</span> <span class="var">left</span><span class="pn">)</span> <span class="op">//</span> <span class="num">2</span>
+        
+        <span class="kw">if</span> <span class="var">data</span><span class="pn">[</span><span class="var">mid</span><span class="pn">]</span> <span class="op">==</span> <span class="var">target</span><span class="pn">:</span>
+            <span class="kw">return</span> <span class="var">mid</span>  <span class="cm"># Found it!</span>
+        
+        <span class="kw">if</span> <span class="var">data</span><span class="pn">[</span><span class="var">mid</span><span class="pn">]</span> <span class="op">&lt;</span> <span class="var">target</span><span class="pn">:</span>
+            <span class="var">left</span> <span class="op">=</span> <span class="var">mid</span> <span class="op">+</span> <span class="num">1</span>  <span class="cm"># Target is in the right half</span>
+        <span class="kw">else</span><span class="pn">:</span>
+            <span class="var">right</span> <span class="op">=</span> <span class="var">mid</span> <span class="op">-</span> <span class="num">1</span> <span class="cm"># Target is in the left half</span>
+    <span class="kw">return</span> <span class="op">-</span><span class="num">1</span> <span class="cm"># Target not found</span></pre>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar fade-in-3">
+      <div class="sidebar-card">
+        <div class="sidebar-title">// TABLE OF CONTENTS</div>
+        <button class="toc-item" onclick="scrollTo('s1')"><span class="toc-num">01</span> Why Binary Beats Linear</button>
+        <button class="toc-item" onclick="scrollTo('s2')"><span class="toc-num">02</span> Understanding the Algorithm</button>
+        <button class="toc-item" onclick="scrollTo('s3')"><span class="toc-num">03</span> Recursive Implementation</button>
+        <button class="toc-item" onclick="scrollTo('s4')"><span class="toc-num">04</span> Iterative Implementation</button>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title">// COMPLEXITY REFERENCE</div>
+        <table class="complexity-table">
+          <tr><td>Best Case</td><td class="good">O(1)</td></tr>
+          <tr><td>Average Case</td><td class="good">O(log n)</td></tr>
+          <tr><td>Worst Case</td><td class="mid">O(log n)</td></tr>
+          <tr><td>Space (Iter.)</td><td class="good">O(1)</td></tr>
+          <tr><td>Space (Recur.)</td><td class="mid">O(log n)</td></tr>
+          <tr><td>Linear Worst</td><td class="bad">O(n)</td></tr>
+        </table>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title">// PREREQUISITES</div>
+        <ul class="prereq-list">
+          <li>Array must be sorted</li>
+          <li>Random access in O(1)</li>
+          <li>Comparable elements</li>
+          <li>Known array bounds</li>
+        </ul>
+      </div>
+
+      <div class="sidebar-card" style="border-color:rgba(0,255,238,0.2);">
+        <div class="sidebar-title" style="color:var(--amber);">// LOG₂ REFERENCE</div>
+        <table class="complexity-table">
+          <tr><td>n = 10</td><td class="good">~4 steps</td></tr>
+          <tr><td>n = 100</td><td class="good">~7 steps</td></tr>
+          <tr><td>n = 1,000</td><td class="good">~10 steps</td></tr>
+          <tr><td>n = 1,000,000</td><td class="good">~20 steps</td></tr>
+          <tr><td>n = 1,000,000,000</td><td class="good">~30 steps</td></tr>
+        </table>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="page-footer">
+    <span>ALG/DOCS // BINARY SEARCH // DIVIDE &amp; CONQUER PARADIGM</span>
+    <span>O(log n) — RUNTIME COMPLEXITY</span>
+  </footer>
+</main>
+
+<script>
+function calculate() {
+  const n = parseInt(document.getElementById('list-size').value);
+  if (!n || n < 1) return;
+
+  const linear = n;
+  const binary = Math.ceil(Math.log2(n));
+
+  document.getElementById('linear-result').textContent = linear.toLocaleString();
+  document.getElementById('binary-result').textContent = binary.toLocaleString();
+  document.getElementById('linear-sub').textContent = 'max comparisons (worst case)';
+  document.getElementById('binary-sub').textContent = '⌈log₂(' + n.toLocaleString() + ')⌉ comparisons';
+
+  const ratio = linear / binary;
+  document.getElementById('speedup-factor').textContent =
+    'Binary is ' + Math.round(ratio).toLocaleString() + '× fewer comparisons';
+
+  document.getElementById('bar-linear').style.width = '100%';
+  const binaryPct = Math.max(0.3, (binary / linear) * 100);
+  document.getElementById('bar-binary').style.width = Math.min(100, binaryPct * 500) + '%';
+
+  buildHalvingBars(n);
+}
+
+function buildHalvingBars(n) {
+  const container = document.getElementById('halving-bars');
+  container.innerHTML = '';
+  const steps = Math.ceil(Math.log2(n || 1000000));
+
+  for (let i = 0; i <= steps; i++) {
+    const pct = (1 / Math.pow(2, i)) * 100;
+    const remaining = Math.ceil(n / Math.pow(2, i));
+
+    const row = document.createElement('div');
+    row.className = 'half-row';
+
+    const label = document.createElement('div');
+    label.className = 'half-row-label';
+    label.textContent = 'step ' + i;
+
+    const barWrap = document.createElement('div');
+    barWrap.className = 'half-row-bar-wrap';
+
+    const fill = document.createElement('div');
+    fill.className = 'half-row-fill' + (i === steps ? ' search' : '');
+    fill.style.width = pct.toFixed(2) + '%';
+
+    const pctLabel = document.createElement('div');
+    pctLabel.className = 'half-row-pct';
+    pctLabel.textContent = remaining.toLocaleString();
+
+    barWrap.appendChild(fill);
+    row.appendChild(label);
+    row.appendChild(barWrap);
+    row.appendChild(pctLabel);
+    container.appendChild(row);
+  }
+}
+
+function scrollTo(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copyCode(btn, codeId) {
+  const pre = document.getElementById(codeId);
+  const text = pre.innerText || pre.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'COPIED ✓';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'COPY';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// Init on load
+window.addEventListener('load', () => {
+  calculate();
+});
+</script>
+</body>
+</html>
