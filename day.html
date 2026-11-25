@@ -109,11 +109,11 @@ header .meta,.date{color:var(--ink);opacity:.85}
   </main>
 </div>
 <script>
-const URL_ = "https://api.open-meteo.com/v1/forecast?latitude=28.6214&longitude=77.2148&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,uv_index_max,uv_index_clear_sky_max,moon_phase,moonset,moonrise,daylight_duration,sunshine_duration,sunset,sunrise,rain_sum,showers_sum,snowfall_sum,precipitation_sum,precipitation_hours,precipitation_probability_max,et0_fao_evapotranspiration,shortwave_radiation_sum,wind_direction_10m_dominant,wind_speed_10m_max,wind_gusts_10m_max&timezone=auto";
+const URL_ = "https://api.open-meteo.com/v1/forecast?latitude=28.6214&longitude=77.2148&current=weather_code,precipitation,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,uv_index_max,uv_index_clear_sky_max,moon_phase,moonset,moonrise,daylight_duration,sunshine_duration,sunset,sunrise,rain_sum,showers_sum,snowfall_sum,precipitation_sum,precipitation_hours,precipitation_probability_max,et0_fao_evapotranspiration,shortwave_radiation_sum,wind_direction_10m_dominant,wind_speed_10m_max,wind_gusts_10m_max&timezone=auto";
 
 const WMO = {0:["Clear sky","☀️"],1:["Mainly clear","🌤️"],2:["Partly cloudy","⛅"],3:["Overcast","☁️"],45:["Fog","🌫️"],48:["Rime fog","🌫️"],51:["Light drizzle","🌦️"],53:["Drizzle","🌦️"],55:["Heavy drizzle","🌧️"],56:["Freezing drizzle","🌧️"],57:["Freezing drizzle","🌧️"],61:["Light rain","🌦️"],63:["Rain","🌧️"],65:["Heavy rain","🌧️"],66:["Freezing rain","🌧️"],67:["Freezing rain","🌧️"],71:["Light snow","🌨️"],73:["Snow","🌨️"],75:["Heavy snow","❄️"],77:["Snow grains","❄️"],80:["Light showers","🌦️"],81:["Showers","🌧️"],82:["Violent showers","⛈️"],85:["Snow showers","🌨️"],86:["Heavy snow showers","🌨️"],95:["Thunderstorm","⛈️"],96:["Thunderstorm, hail","⛈️"],99:["Thunderstorm, heavy hail","⛈️"]};
 const $ = id => document.getElementById(id);
-let D, tzOffset, sel = 0;
+let D, C, tzOffset, sel = 0;
 
 const w = c => WMO[c] || ["Unknown","❔"];
 const deg = v => Math.round(v) + "°";
@@ -137,7 +137,7 @@ async function load() {
     const r = await fetch(URL_, {cache: "no-store"});
     if (!r.ok) throw new Error("The weather service returned " + r.status + ".");
     const j = await r.json();
-    D = j.daily; tzOffset = j.utc_offset_seconds || 0;
+    D = j.daily; C = j.current || null; tzOffset = j.utc_offset_seconds || 0;
     $("state").hidden = true; $("app").hidden = false;
     $("updated").textContent = "Updated " + new Date().toLocaleTimeString("en-IN", {hour: "numeric", minute: "2-digit"});
     renderDays(); render();
@@ -239,11 +239,11 @@ function countTo(el, v) {
 
 const fx = {kind: "dry", cover: 0, inten: 0, L: 1, W: 0, t: 720, sr: 360, ss: 1080, vx: 0};
 function scene(i) {
-  const code = D.weather_code[i], sr = mins(D.sunrise[i]), ss = mins(D.sunset[i]), t = curT(i);
+  const now = i === 0 ? C : null;\n  const code = now ? now.weather_code : D.weather_code[i], sr = mins(D.sunrise[i]), ss = mins(D.sunset[i]), t = curT(i);
   const kind = code >= 95 ? "storm" : (code >= 71 && code <= 77) || code === 85 || code === 86 ? "snow" : (code >= 51 && code <= 67) || (code >= 80 && code <= 82) ? "rain" : code === 45 || code === 48 ? "fog" : "dry";
   const wet = kind === "rain" || kind === "storm" || kind === "snow";
   const cover = wet ? 1 : ({0: 0, 1: .2, 2: .5, 3: .9}[code] ?? .9);
-  const inten = wet ? clamp(.2 + (D.precipitation_sum[i] || 0) / 25) * (code >= 51 && code <= 57 ? .5 : 1) : 0;
+  const precipitation = now ? now.precipitation : D.precipitation_sum[i];\n  const inten = wet ? clamp(.2 + (precipitation || 0) / 25) * (code >= 51 && code <= 57 ? .5 : 1) : 0;
   const L = Math.min(clamp((t - sr + 40) / 80), clamp((ss + 40 - t) / 80)), Wm = 1 - Math.abs(2 * L - 1);
   let top = mix(mix("#060d1f", "#3b8fd9", L), "#3a3a78", Wm * .6 * (1 - cover * .6));
   let bot = mix(mix("#14224a", "#aed8f2", L), "#f59a63", Wm * .85 * (1 - cover * .6));
@@ -251,7 +251,7 @@ function scene(i) {
   top = mix(mix(top, grey, cover * .7), "#20262f", dark); bot = mix(mix(bot, mix(grey, "#c3ccd5", L * .6), cover * .7), "#2c333d", dark);
   $("sky").style.setProperty("--s1", top); $("sky").style.setProperty("--s2", bot);
   document.documentElement.dataset.theme = L < .45 ? "dark" : "light";
-  const sp = D.wind_speed_10m_max[i] || 0, wd = D.wind_direction_10m_dominant[i] || 0;
+  const sp = now ? now.wind_speed_10m : (D.wind_speed_10m_max[i] || 0);\n  const wd = now ? now.wind_direction_10m : (D.wind_direction_10m_dominant[i] || 0);
   Object.assign(fx, {kind, cover, inten, L, W: Wm, t, sr, ss, vx: -Math.sin(wd * Math.PI / 180) * clamp(sp / 35, .15, 1.2)});
   const c = $("clock"); c.value = t; $("clockOut").textContent = clock("0000-00-00T" + String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0"));
   $("live").hidden = simMin == null;
