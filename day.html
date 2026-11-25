@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>New Delhi Weather</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef3f7;--panel:rgba(255,255,255,.55);--ink:#12263a;--mute:#5d7184;--line:#d5dfe8;--sun:#e8a317;--rain:#2f6fb3;--hot:#d9541e;--cool:#2c8aa6;--sky1:#cfe4f5;--sky2:#f6e9c8;--r:14px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1623;--panel:rgba(12,26,45,.5);--ink:#e8eef4;--mute:#8fa3b7;--line:#25405c;--sun:#f4b942;--rain:#6aa8e6;--hot:#f2865a;--cool:#59b9d4;--sky1:#17304d;--sky2:#3a3350}}
+:root[data-theme="dark"]{--bg:#0b1623;--panel:rgba(12,26,45,.5);--ink:#e8eef4;--mute:#8fa3b7;--line:#25405c;--sun:#f4b942;--rain:#6aa8e6;--hot:#f2865a;--cool:#59b9d4;--sky1:#17304d;--sky2:#3a3350}
+*{box-sizing:border-box}
+html{height:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Figtree,system-ui,sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1,h2,.big{font-family:"Bricolage Grotesque",Figtree,sans-serif;margin:0}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:1.1rem;font-weight:600}
+.meta{color:var(--mute);font-size:.85rem}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.link{background:none;border:1px solid var(--line);border-radius:99px;padding:4px 12px;font-size:.85rem;color:var(--mute)}
+.hero{background:linear-gradient(180deg,var(--sky1),var(--sky2));border-radius:var(--r);padding:22px 22px 8px;overflow:hidden}
+.hero-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.date{font-weight:500;color:var(--mute)}
+.big{font-size:clamp(3.5rem,13vw,6.5rem);font-weight:800;line-height:1;letter-spacing:-.03em}
+.big small{font-size:.35em;font-weight:600;color:var(--mute);letter-spacing:0;margin-left:10px}
+.cond{font-size:1.25rem;font-weight:500}
+.feels{color:var(--mute);font-size:.95rem}
+.arc{width:100%;height:auto;display:block;margin-top:6px}
+.arc text{fill:var(--ink);font:500 12px Figtree,sans-serif}
+.arc .m{fill:var(--mute)}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:14px 0}
+.day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 4px;text-align:center;display:flex;flex-direction:column;gap:2px;align-items:center}
+.day[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.day .n{font-weight:600;font-size:.9rem}.day .i{font-size:1.5rem;line-height:1.3}.day .t{font-size:.8rem;color:var(--mute)}.day .t b{color:var(--ink);font-weight:600}
+.day .p{font-size:.72rem;color:var(--rain)}
+.bar{position:relative;width:60%;height:5px;border-radius:3px;background:var(--line);margin:4px 0}
+.bar i{position:absolute;top:0;bottom:0;border-radius:3px;background:linear-gradient(90deg,var(--cool),var(--hot))}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.card h2{font-size:1rem;font-weight:600;margin-bottom:8px}
+dl{margin:0}
+.row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px solid var(--line);font-size:.93rem}
+.row:first-of-type{border-top:0}
+dt{color:var(--mute)}dd{margin:0;font-weight:600;text-align:right}
+.gauge{height:8px;border-radius:4px;background:linear-gradient(90deg,#5aa469 0 27%,#e8c33a 27% 54%,#e8892a 54% 72%,#d9441e 72% 90%,#8a3fa8 90%);position:relative;margin:6px 0 10px}
+.gauge i{position:absolute;top:-4px;width:4px;height:16px;border-radius:2px;background:var(--ink);transform:translateX(-50%)}
+.compass{float:right;width:64px;height:64px;margin:0 0 6px 10px}
+.moon{float:right;margin:0 0 6px 10px}
+#state{text-align:center;padding:60px 16px;color:var(--mute)}
+.err{color:var(--hot)}
+@media (max-width:560px){.days{gap:4px}.day .n{font-size:.78rem}.day .i{font-size:1.2rem}.day .p{display:none}}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:all .4s}}
+
+@property --s1{syntax:"<color>";inherits:false;initial-value:#3b8fd9}
+@property --s2{syntax:"<color>";inherits:false;initial-value:#aed8f2}
+#sky{position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg,var(--s1),var(--s2));transition:--s1 1.6s ease,--s2 1.6s ease}
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.hero,.card,.day{background:var(--panel);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3)}
+.hero{border:1px solid var(--line)}
+header .meta,.date{color:var(--ink);opacity:.85}
+.hero .feels{color:var(--ink);opacity:.75}
+.scrub{display:flex;align-items:center;gap:12px;padding:6px 0 14px;font-size:.85rem}
+.scrub label{color:var(--mute)}
+.scrub input{flex:1;accent-color:var(--sun);min-width:0}
+.scrub output{min-width:4.8em;text-align:right;font-weight:600}
+.day{transition:transform .2s,border-color .2s}
+.day:hover{transform:translateY(-3px)}
+.day[aria-pressed="true"] .i{display:inline-block;animation:bob 3.2s ease-in-out infinite}
+.glow{animation:pulse 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes bob{50%{transform:translateY(-4px) rotate(4deg)}}
+@keyframes pulse{50%{transform:scale(1.6);opacity:.15}}
+@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}}
+@media (prefers-reduced-motion:no-preference){
+.card{animation:rise .6s cubic-bezier(.2,.7,.2,1) both}
+.card:nth-child(2){animation-delay:.07s}.card:nth-child(3){animation-delay:.14s}.card:nth-child(4){animation-delay:.21s}.card:nth-child(5){animation-delay:.28s}.card:nth-child(6){animation-delay:.35s}
+.bar i{transform-origin:left;animation:grow .9s cubic-bezier(.2,.7,.2,1) both}
+.hero{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}}
+@media (prefers-reduced-motion:reduce){.glow,.day .i{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="sky"></div><canvas id="fx" aria-hidden="true"></canvas>
+<div class="wrap">
+  <header>
+    <h1>New Delhi · 7-day forecast</h1>
+    <span class="meta"><span id="updated">Loading…</span> <button class="link" id="refresh" type="button">Refresh</button></span>
+  </header>
+  <div id="state" role="status">Fetching the latest forecast…</div>
+  <main id="app" hidden>
+    <section class="hero" aria-live="polite">
+      <div class="hero-top">
+        <div>
+          <div class="date" id="hDate"></div>
+          <div class="big"><span id="hMax"></span><small id="hMin"></small></div>
+          <div class="cond" id="hCond"></div>
+          <div class="feels" id="hFeels"></div>
+        </div>
+      </div>
+      <svg class="arc" id="arc" viewBox="0 0 600 150" role="img" aria-label="Sun path from sunrise to sunset"></svg>
+      <div class="scrub"><label for="clock">Time of day</label><input type="range" id="clock" min="0" max="1439" step="5"><output id="clockOut" for="clock"></output><button class="link" id="live" type="button">Live</button></div>
+    </section>
+    <div class="days" id="days" role="group" aria-label="Choose a day"></div>
+    <div class="grid" id="details"></div>
+  </main>
+</div>
+<script>
+const URL_ = "https://api.open-meteo.com/v1/forecast?latitude=28.6214&longitude=77.2148&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,uv_index_max,uv_index_clear_sky_max,moon_phase,moonset,moonrise,daylight_duration,sunshine_duration,sunset,sunrise,rain_sum,showers_sum,snowfall_sum,precipitation_sum,precipitation_hours,precipitation_probability_max,et0_fao_evapotranspiration,shortwave_radiation_sum,wind_direction_10m_dominant,wind_speed_10m_max,wind_gusts_10m_max&timezone=auto";
+
+const WMO = {0:["Clear sky","☀️"],1:["Mainly clear","🌤️"],2:["Partly cloudy","⛅"],3:["Overcast","☁️"],45:["Fog","🌫️"],48:["Rime fog","🌫️"],51:["Light drizzle","🌦️"],53:["Drizzle","🌦️"],55:["Heavy drizzle","🌧️"],56:["Freezing drizzle","🌧️"],57:["Freezing drizzle","🌧️"],61:["Light rain","🌦️"],63:["Rain","🌧️"],65:["Heavy rain","🌧️"],66:["Freezing rain","🌧️"],67:["Freezing rain","🌧️"],71:["Light snow","🌨️"],73:["Snow","🌨️"],75:["Heavy snow","❄️"],77:["Snow grains","❄️"],80:["Light showers","🌦️"],81:["Showers","🌧️"],82:["Violent showers","⛈️"],85:["Snow showers","🌨️"],86:["Heavy snow showers","🌨️"],95:["Thunderstorm","⛈️"],96:["Thunderstorm, hail","⛈️"],99:["Thunderstorm, heavy hail","⛈️"]};
+const $ = id => document.getElementById(id);
+let D, tzOffset, sel = 0;
+
+const w = c => WMO[c] || ["Unknown","❔"];
+const deg = v => Math.round(v) + "°";
+const num = (v, d = 1) => v == null ? "–" : (+v).toFixed(d).replace(/\.0+$/, "");
+const clock = s => { if (!s) return "–"; const [h, m] = s.slice(11, 16).split(":"); const H = +h % 12 || 12; return H + ":" + m + (+h < 12 ? " am" : " pm"); };
+const mins = s => s.slice(11, 16).split(":").reduce((a, b) => a * 60 + +b, 0);
+const dur = sec => Math.floor(sec / 3600) + " h " + Math.round(sec % 3600 / 60) + " min";
+const dayName = (s, i) => i === 0 ? "Today" : new Date(s + "T00:00:00Z").toLocaleDateString("en-IN", {weekday: "short", timeZone: "UTC"});
+const longDate = s => new Date(s + "T00:00:00Z").toLocaleDateString("en-IN", {weekday: "long", day: "numeric", month: "long", timeZone: "UTC"});
+const compass = d => ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"][Math.round(d / 22.5) % 16];
+function phase(p) {
+  const n = p < .03 || p > .97 ? "New moon" : p < .22 ? "Waxing crescent" : p < .28 ? "First quarter" : p < .47 ? "Waxing gibbous" : p < .53 ? "Full moon" : p < .72 ? "Waning gibbous" : p < .78 ? "Last quarter" : "Waning crescent";
+  return n;
+}
+function uvLabel(u) { return u < 3 ? "Low" : u < 6 ? "Moderate" : u < 8 ? "High" : u < 11 ? "Very high" : "Extreme"; }
+const row = (k, v) => `<div class="row"><dt>${k}</dt><dd>${v}</dd></div>`;
+
+async function load() {
+  $("refresh").disabled = true;
+  try {
+    const r = await fetch(URL_, {cache: "no-store"});
+    if (!r.ok) throw new Error("The weather service returned " + r.status + ".");
+    const j = await r.json();
+    D = j.daily; tzOffset = j.utc_offset_seconds || 0;
+    $("state").hidden = true; $("app").hidden = false;
+    $("updated").textContent = "Updated " + new Date().toLocaleTimeString("en-IN", {hour: "numeric", minute: "2-digit"});
+    renderDays(); render();
+  } catch (e) {
+    $("state").hidden = false;
+    $("state").innerHTML = '<span class="err">Couldn’t load the forecast.</span><br>' + e.message + ' Check your connection and select Refresh.';
+    $("updated").textContent = "";
+  }
+  $("refresh").disabled = false;
+}
+
+function renderDays() {
+  const lo = Math.min(...D.temperature_2m_min), hi = Math.max(...D.temperature_2m_max), span = hi - lo || 1;
+  $("days").innerHTML = D.time.map((t, i) => {
+    const L = (D.temperature_2m_min[i] - lo) / span * 100, W = (D.temperature_2m_max[i] - D.temperature_2m_min[i]) / span * 100;
+    return `<button class="day" type="button" data-i="${i}" aria-pressed="${i === sel}">
+      <span class="n">${dayName(t, i)}</span><span class="i" aria-hidden="true">${w(D.weather_code[i])[1]}</span>
+      <span class="t"><b>${deg(D.temperature_2m_max[i])}</b> ${deg(D.temperature_2m_min[i])}</span>
+      <span class="bar"><i style="left:${L}%;width:${Math.max(W, 8)}%"></i></span>
+      <span class="p">${D.precipitation_probability_max[i] ?? 0}% rain</span></button>`;
+  }).join("");
+}
+
+function arc(i) {
+  const sr = mins(D.sunrise[i]), ss = mins(D.sunset[i]);
+  const X0 = 40, X1 = 560, Y = 118, H = 90;
+  const pt = f => [X0 + (X1 - X0) * f, Y - H * Math.sin(Math.PI * f)];
+  let path = ""; for (let k = 0; k <= 40; k++) { const [x, y] = pt(k / 40); path += (k ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1); }
+  let marker = "", lit = "";
+  {
+    const nm = curT(i);
+    const f = (nm - sr) / (ss - sr);
+    if (f >= 0 && f <= 1) {
+      const [x, y] = pt(f);
+      let p2 = ""; for (let k = 0; k <= Math.round(f * 40); k++) { const [a, b] = pt(k / 40); p2 += (k ? "L" : "M") + a.toFixed(1) + " " + b.toFixed(1); }
+      lit = `<path d="${p2}" fill="none" stroke="var(--sun)" stroke-width="4" stroke-linecap="round"/>`;
+      marker = `<circle class="glow" cx="${x}" cy="${y}" r="16" fill="var(--sun)" opacity=".5"/><circle cx="${x}" cy="${y}" r="10" fill="var(--sun)" stroke="var(--bg)" stroke-width="3"/>`;
+    } else marker = `<text x="300" y="70" text-anchor="middle" class="m">${nm < sr ? "Sun not up yet" : "Sun has set"}</text>`;
+  }
+  $("arc").innerHTML = `<line x1="10" y1="${Y}" x2="590" y2="${Y}" stroke="var(--mute)" stroke-opacity=".4"/>
+    <path d="${path}" fill="none" stroke="var(--mute)" stroke-opacity=".5" stroke-width="2" stroke-dasharray="4 5"/>${lit}${marker}
+    <text x="${X0}" y="140" text-anchor="middle">${clock(D.sunrise[i])}</text><text x="${X1}" y="140" text-anchor="middle">${clock(D.sunset[i])}</text>
+    <text x="300" y="140" text-anchor="middle" class="m">${dur(D.daylight_duration[i])} of daylight</text>`;
+}
+
+function render() {
+  const i = sel, g = k => D[k][i], [cond] = w(g("weather_code"));
+  $("hDate").textContent = longDate(D.time[i]);
+  countTo($("hMax"), g("temperature_2m_max"));
+  $("hMin").textContent = "low " + deg(g("temperature_2m_min"));
+  $("hCond").textContent = cond;
+  $("hFeels").textContent = "Feels like " + deg(g("apparent_temperature_min")) + " to " + deg(g("apparent_temperature_max"));
+  arc(i); scene(i);
+  document.querySelectorAll(".day").forEach(b => b.setAttribute("aria-pressed", +b.dataset.i === i));
+  const uv = g("uv_index_max"), uvc = g("uv_index_clear_sky_max"), pm = g("moon_phase"), wd = g("wind_direction_10m_dominant");
+  const moonIcon = ["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"][Math.round(pm * 8) % 8];
+  $("details").innerHTML = `
+  <article class="card"><h2>Temperature</h2><dl>
+    ${row("High", deg(g("temperature_2m_max")))}${row("Low", deg(g("temperature_2m_min")))}
+    ${row("Feels-like high", deg(g("apparent_temperature_max")))}${row("Feels-like low", deg(g("apparent_temperature_min")))}</dl></article>
+  <article class="card"><h2>Rain and snow</h2><dl>
+    ${row("Chance of precipitation", num(g("precipitation_probability_max"), 0) + "%")}${row("Total precipitation", num(g("precipitation_sum")) + " mm")}
+    ${row("Rain", num(g("rain_sum")) + " mm")}${row("Showers", num(g("showers_sum")) + " mm")}
+    ${row("Snowfall", num(g("snowfall_sum")) + " cm")}${row("Hours with precipitation", num(g("precipitation_hours"), 0) + " h")}</dl></article>
+  <article class="card"><h2>UV index</h2>
+    <div class="gauge"><i style="left:${Math.min(uv / 12, 1) * 100}%"></i></div><dl>
+    ${row("Peak UV", num(uv) + " · " + uvLabel(uv))}${row("Peak UV, cloud-free sky", num(uvc) + " · " + uvLabel(uvc))}</dl></article>
+  <article class="card"><h2>Wind</h2>
+    <svg class="compass" viewBox="-32 -32 64 64" role="img" aria-label="Wind from ${compass(wd)}"><circle r="30" fill="none" stroke="var(--line)" stroke-width="2"/><text y="-19" text-anchor="middle" font-size="9" fill="var(--mute)">N</text>
+      <g transform="rotate(${wd + 180})"><path d="M0 -20 L6 8 L0 4 L-6 8Z" fill="var(--rain)"/></g></svg><dl>
+    ${row("Top speed", num(g("wind_speed_10m_max")) + " km/h")}${row("Top gusts", num(g("wind_gusts_10m_max")) + " km/h")}
+    ${row("Mostly from", compass(wd) + " (" + Math.round(wd) + "°)")}</dl></article>
+  <article class="card"><h2>Sun</h2><dl>
+    ${row("Sunrise", clock(g("sunrise")))}${row("Sunset", clock(g("sunset")))}
+    ${row("Daylight", dur(g("daylight_duration")))}${row("Sunshine", dur(g("sunshine_duration")))}
+    ${row("Solar energy", num(g("shortwave_radiation_sum")) + " MJ/m²")}${row("Evapotranspiration", num(g("et0_fao_evapotranspiration"), 2) + " mm")}</dl></article>
+  <article class="card"><h2>Moon</h2><div class="moon" style="font-size:2.6rem;line-height:1" aria-hidden="true">${moonIcon}</div><dl>
+    ${row("Phase", phase(pm))}${row("Moonrise", clock(g("moonrise")))}${row("Moonset", clock(g("moonset")))}</dl></article>`;
+}
+
+
+/* ---------- Sky, light and weather effects ---------- */
+const still = matchMedia("(prefers-reduced-motion:reduce)").matches;
+let simMin = null;
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const hx = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, k) => { const A = hx(a), B = hx(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * k).toString(16).padStart(2, "0")).join(""); };
+function curT(i) {
+  if (simMin != null) return simMin;
+  if (i === 0) { const n = new Date(Date.now() + tzOffset * 1000); return n.getUTCHours() * 60 + n.getUTCMinutes(); }
+  return Math.round((mins(D.sunrise[i]) + mins(D.sunset[i])) / 2);
+}
+function countTo(el, v) {
+  const to = Math.round(v), from = +el.dataset.v || 0; el.dataset.v = to;
+  if (still) { el.textContent = to + "°"; return; }
+  const t0 = performance.now();
+  (function s(n) { const k = clamp((n - t0) / 800), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(from + (to - from) * e) + "°"; if (k < 1) requestAnimationFrame(s); })(t0);
+}
+
+const fx = {kind: "dry", cover: 0, inten: 0, L: 1, W: 0, t: 720, sr: 360, ss: 1080, vx: 0};
+function scene(i) {
+  const code = D.weather_code[i], sr = mins(D.sunrise[i]), ss = mins(D.sunset[i]), t = curT(i);
+  const kind = code >= 95 ? "storm" : (code >= 71 && code <= 77) || code === 85 || code === 86 ? "snow" : (code >= 51 && code <= 67) || (code >= 80 && code <= 82) ? "rain" : code === 45 || code === 48 ? "fog" : "dry";
+  const wet = kind === "rain" || kind === "storm" || kind === "snow";
+  const cover = wet ? 1 : ({0: 0, 1: .2, 2: .5, 3: .9}[code] ?? .9);
+  const inten = wet ? clamp(.2 + (D.precipitation_sum[i] || 0) / 25) * (code >= 51 && code <= 57 ? .5 : 1) : 0;
+  const L = Math.min(clamp((t - sr + 40) / 80), clamp((ss + 40 - t) / 80)), Wm = 1 - Math.abs(2 * L - 1);
+  let top = mix(mix("#060d1f", "#3b8fd9", L), "#3a3a78", Wm * .6 * (1 - cover * .6));
+  let bot = mix(mix("#14224a", "#aed8f2", L), "#f59a63", Wm * .85 * (1 - cover * .6));
+  const grey = mix("#1b2331", "#7b8b9b", L), dark = kind === "storm" ? .3 : 0;
+  top = mix(mix(top, grey, cover * .7), "#20262f", dark); bot = mix(mix(bot, mix(grey, "#c3ccd5", L * .6), cover * .7), "#2c333d", dark);
+  $("sky").style.setProperty("--s1", top); $("sky").style.setProperty("--s2", bot);
+  document.documentElement.dataset.theme = L < .45 ? "dark" : "light";
+  const sp = D.wind_speed_10m_max[i] || 0, wd = D.wind_direction_10m_dominant[i] || 0;
+  Object.assign(fx, {kind, cover, inten, L, W: Wm, t, sr, ss, vx: -Math.sin(wd * Math.PI / 180) * clamp(sp / 35, .15, 1.2)});
+  const c = $("clock"); c.value = t; $("clockOut").textContent = clock("0000-00-00T" + String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0"));
+  $("live").hidden = simMin == null;
+  if (still) frame(0);
+}
+
+const cv = $("fx"), cx = cv.getContext("2d");
+let VW, VH;
+function size() { const r = Math.min(devicePixelRatio || 1, 2); VW = innerWidth; VH = innerHeight; cv.width = VW * r; cv.height = VH * r; cx.setTransform(r, 0, 0, r, 0, 0); }
+function sprite(col) { const c = document.createElement("canvas"); c.width = 420; c.height = 160; const g = c.getContext("2d");
+  [[110, 100, 70], [190, 78, 85], [270, 95, 75], [335, 105, 55], [220, 112, 60]].forEach(([x, y, r]) => { const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, col + "cc"); gr.addColorStop(1, col + "00"); g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2); }); return c; }
+const cLight = sprite("#ffffff"), cDark = sprite("#4a5568");
+const R = Math.random;
+const stars = Array.from({length: 130}, () => ({x: R(), y: R(), r: R() * 1.8 + .5, f: R() * 2 + 1, p: R() * 6}));
+const clouds = Array.from({length: 11}, (_, k) => ({x: R() * 1.2, y: .03 + R() * .42, s: .7 + R() * 1.1, sp: .004 + R() * .01, k}));
+const drops = Array.from({length: 320}, () => ({x: R(), y: R(), l: 10 + R() * 14, v: 700 + R() * 500}));
+const flakes = Array.from({length: 170}, () => ({x: R(), y: R(), r: 1.2 + R() * 2.6, v: 40 + R() * 60, p: R() * 6}));
+let flash = 0, nextFlash = 2, bolt = null, last = 0, rot = 0;
+
+function body(ts) {
+  const o = fx, f = clamp((o.t - o.sr) / (o.ss - o.sr)), inDay = o.t >= o.sr - 20 && o.t <= o.ss + 20;
+  if (inDay) {
+    const x = VW * (.08 + .84 * f), y = VH * (.4 - .3 * Math.sin(Math.PI * f)), a = clamp(o.L * 1.4) * (1 - o.cover * .8), r = Math.min(VW, 700) * .28;
+    const g = cx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, "rgba(255,236,170,.95)"); g.addColorStop(.12, "rgba(255,214,120,.55)"); g.addColorStop(1, "rgba(255,190,90,0)");
+    cx.globalAlpha = a; cx.fillStyle = g; cx.fillRect(x - r, y - r, r * 2, r * 2);
+    if (o.cover < .6) { cx.save(); cx.translate(x, y); cx.rotate(rot * .05); cx.globalAlpha = a * .18; cx.fillStyle = "#fff4c4";
+      for (let k = 0; k < 14; k++) { cx.rotate(Math.PI / 7); cx.beginPath(); cx.moveTo(0, 0); cx.lineTo(-9, -r * 1.1); cx.lineTo(9, -r * 1.1); cx.fill(); } cx.restore(); }
+    cx.globalAlpha = a; cx.fillStyle = "#fff6d6"; cx.beginPath(); cx.arc(x, y, 26, 0, 7); cx.fill();
+  }
+  const night = 1 - o.L;
+  if (night > .05) {
+    const len = o.sr + 1440 - o.ss, tn = o.t >= o.ss ? o.t - o.ss : o.t + 1440 - o.ss, m = clamp(tn / len);
+    const x = VW * (.08 + .84 * m), y = VH * (.4 - .3 * Math.sin(Math.PI * m)), a = night * (1 - o.cover * .8);
+    const g = cx.createRadialGradient(x, y, 0, x, y, 150); g.addColorStop(0, "rgba(200,220,255,.5)"); g.addColorStop(1, "rgba(200,220,255,0)");
+    cx.globalAlpha = a; cx.fillStyle = g; cx.fillRect(x - 150, y - 150, 300, 300);
+    cx.fillStyle = "#eef3ff"; cx.beginPath(); cx.arc(x, y, 22, 0, 7); cx.fill();
+  }
+  const sA = clamp(night * 1.5) * (1 - o.cover * .85);
+  if (sA > .02) { cx.fillStyle = "#fff"; stars.forEach(s => { cx.globalAlpha = sA * (.65 + .35 * Math.sin(ts / 500 * s.f + s.p)); cx.fillRect(s.x * VW, s.y * VH * .7, s.r, s.r); }); }
+}
+
+function frame(ts) {
+  const dt = last ? Math.min((ts - last) / 1000, .05) : 0; last = ts; rot += dt;
+  cx.clearRect(0, 0, VW, VH); const o = fx; cx.globalAlpha = 1;
+  body(ts);
+  const n = Math.round(o.cover * 11), wetK = o.inten > 0 || o.kind === "fog" ? 1 : 0;
+  clouds.forEach((c, k) => {
+    const a = clamp(n - k); if (a <= 0) return;
+    c.x += (c.sp + o.vx * .012) * dt * (still ? 0 : 1); if (c.x > 1.3) c.x = -.4; if (c.x < -.4) c.x = 1.3;
+    const w = 420 * c.s * (VW < 600 ? .8 : 1.1), h = w * .38, x = c.x * VW - w / 2, y = c.y * VH;
+    cx.globalAlpha = a * (.25 + .55 * o.L) * (1 - wetK * .75); cx.drawImage(cLight, x, y, w, h);
+    cx.globalAlpha = a * (wetK * .85 + (1 - o.L) * .5) * (o.kind === "storm" ? 1 : .8); cx.drawImage(cDark, x, y, w, h);
+  });
+  cx.globalAlpha = 1;
+  if (o.kind === "rain" || o.kind === "storm") {
+    const cnt = Math.round(60 + o.inten * 260), slant = o.vx * .35; cx.strokeStyle = o.L > .5 ? "rgba(70,110,160,.55)" : "rgba(170,200,240,.55)"; cx.lineWidth = 1.2; cx.beginPath();
+    for (let k = 0; k < cnt; k++) { const d = drops[k]; d.y += d.v * dt / VH; d.x += slant * d.v * dt / VW; if (d.y > 1) { d.y = -.05; d.x = R() * 1.2 - .1; } if (d.x > 1.1) d.x = -.1; if (d.x < -.1) d.x = 1.1;
+      cx.moveTo(d.x * VW, d.y * VH); cx.lineTo(d.x * VW - slant * d.l, d.y * VH - d.l); }
+    cx.stroke();
+  }
+  if (o.kind === "snow") {
+    cx.fillStyle = "#fff"; cx.globalAlpha = .85; const cnt = Math.round(50 + o.inten * 120);
+    for (let k = 0; k < cnt; k++) { const d = flakes[k]; d.y += d.v * dt / VH; d.x += (Math.sin(ts / 900 + d.p) * .02 + o.vx * .03) * dt; if (d.y > 1.02) { d.y = -.02; d.x = R(); } cx.beginPath(); cx.arc(d.x * VW, d.y * VH, d.r, 0, 7); cx.fill(); }
+  }
+  if (o.kind === "fog") { for (let k = 0; k < 4; k++) { const y = VH * (.25 + k * .2), x = ((ts / 40 * (k + 1) * .4) % (VW * 1.5)) - VW * .25;
+      const g = cx.createLinearGradient(x, 0, x + VW, 0); g.addColorStop(0, "rgba(220,228,236,0)"); g.addColorStop(.5, "rgba(220,228,236,.35)"); g.addColorStop(1, "rgba(220,228,236,0)");
+      cx.globalAlpha = .55 + .2 * Math.sin(ts / 2500 + k); cx.fillStyle = g; cx.fillRect(x - VW * .5, y, VW * 2, VH * .16); } }
+  if (o.kind === "storm" && !still) {
+    nextFlash -= dt; if (nextFlash < 0) { flash = 1; nextFlash = 3 + R() * 6; const bx = R() * VW * .8 + VW * .1; bolt = [[bx, 0]]; for (let y = 0, x = bx; y < VH * .55; y += 30 + R() * 30) { x += R() * 70 - 35; bolt.push([x, y]); } }
+    if (flash > 0) { cx.globalAlpha = flash * .35; cx.fillStyle = "#e8f0ff"; cx.fillRect(0, 0, VW, VH);
+      if (bolt) { cx.globalAlpha = flash; cx.strokeStyle = "#fff"; cx.lineWidth = 2.5; cx.shadowColor = "#9cc4ff"; cx.shadowBlur = 18; cx.beginPath(); bolt.forEach((p, k) => k ? cx.lineTo(p[0], p[1]) : cx.moveTo(p[0], p[1])); cx.stroke(); cx.shadowBlur = 0; }
+      flash -= dt * 2.4; }
+  }
+  cx.globalAlpha = 1;
+  if (!still) requestAnimationFrame(frame);
+}
+size(); addEventListener("resize", () => { size(); if (still && D) frame(0); });
+if (!still) requestAnimationFrame(frame);
+$("clock").addEventListener("input", e => { simMin = +e.target.value; scene(sel); arc(sel); });
+$("live").addEventListener("click", () => { simMin = null; scene(sel); arc(sel); });
+setInterval(() => { if (D && simMin == null) { scene(sel); arc(sel); } }, 60000);
+
+$("days").addEventListener("click", e => { const b = e.target.closest(".day"); if (b) { sel = +b.dataset.i; simMin = null; render(); } });
+$("refresh").addEventListener("click", load);
+setInterval(load, 30 * 60 * 1000);
+load();
+</script>
+</body>
+</html>
